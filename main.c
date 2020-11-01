@@ -2,13 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 
+int gestor() {
+    /*Esta função corresponde ao cargo de gestor*/
+    FILE *fp = fopen("gestor.txt", "r");
+    if (fp == NULL){
+        printf("File not open error\n");
+        return -1;
+    }
+    
+    return 0;
+}
+
+int eng() {
+    /*Esta função corresponde ao cargo de engenheiro*/
+    
+    return 0;
+}
+
 int main() {
     int i, logado = 0, not_email = 1, email_aceito = 0, senha_aceita = 0, key = 0;
-    char* email[24], senha[24];
-    char* login[] = {"allanlucas@empresa.com", "123",
-                     "alanamorais@empresa.com", "321",
-                     "lirielterto@empresa.com", "012",
-                     "lucaslins@iesp.edu.br", "000"
+    int info_p_linha = 3;
+    char email[24], senha[24];
+    //                             "e-mail", "senha", "função"
+    char* login[] = {"allanlucas@empresa.com", "123", "E",
+                     "alanamorais@empresa.com", "321", "F",
+                     "lirielterto@empresa.com", "012", "M",
+                     "lucaslins@iesp.edu.br", "000", "G"
                     };
     
     // Login
@@ -16,7 +35,9 @@ int main() {
         do{
             printf("Digite seu e-mail: ");
             scanf("%s", &email);
-            for (i = 0; i < 8; i=i+2) {
+
+            for (i = 0; i < 12; i=i+info_p_linha) {
+                //printf("%s: %i\n", login[i], i);
                 if (strcmp(email, login[i]) == 0) {
                     email_aceito = 1;
                     not_email = 0;
@@ -30,7 +51,7 @@ int main() {
         } while (not_email == 1);
         
         i=0;
-        printf("%i\n", key);
+        //printf("%i\n", key);
 
         do{
             if (i > 0) {
@@ -46,6 +67,13 @@ int main() {
             }
         } while ((senha_aceita == 0) && (i < 5));
     }
-    printf("Dentro\n");
+    
+    if (strcmp(login[key+2], "G") == 0) {
+        gestor();
+    } else if (strcmp(login[key+2], "E") == 0) {
+        eng();
+    } else {
+        printf("ERROR FATAL!!! USER TYPE NOT RECOGNIZED!!!\n");
+    }
     return 0;
 }
