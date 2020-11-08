@@ -59,3 +59,13 @@ int multiplicar(int a, int b){
 
 > Dentro de switch-cases!
 
+## Structs
+
+Deste jeito ele é declarado e preparado já no caminho.
+
+```C
+typedef struct{
+    int func;
+    float custo;
+} obra;
+```
