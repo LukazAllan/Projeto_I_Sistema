@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct{
     int on;
@@ -26,11 +27,12 @@ typedef struct{
 typedef struct{
     char email[24];
     char senha[3];
-    char* nome[10];
+    char nome[10];
     int func;
 } log;
 
 void clear(void);
+int cls(char sis);
 
 int main() {
     // void setup()
@@ -47,33 +49,47 @@ int main() {
     char email[24];
     char senha[24];
     char q = 'z';
+    char so = '0';
+    char* sis[2] = {"cls", "clear"};
     log login[4];
 
     strcpy(login[1].email, "allanlucas@empresa.com");
     strcpy(login[1].senha, "123");
-    login[1].func = 1; //"E"
+    login[1].func = 1; //"Engenheiro"
     strcpy(login[1].nome, "Allan");
 
     strcpy(login[3].email, "alanamorais@empresa.com");
     strcpy(login[3].senha, "321");
-    login[3].func = 3; //"F"
+    login[3].func = 3; //"Fornecedor"
     strcpy(login[3].nome, "Alana");
 
     strcpy(login[2].email, "lirielterto@empresa.com");
     strcpy(login[2].senha, "012");
-    login[2].func = 2; //"M"
+    login[2].func = 2; //"Mestre de Obras"
     strcpy(login[2].nome, "Liriel");
 
     strcpy(login[0].email, "lucaslins@iesp.edu.br");
     strcpy(login[0].senha, "000");
-    login[0].func = 0; //"G"
+    login[0].func = 0; //"Gestor UNIESP"
     strcpy(login[0].nome, "Lucas");
     
+    while (3 > 2)
+    {
+        printf("Qual SO:\n\tW. Windows\n\tL. Linux/Mac\nletra em minúsculo >>>");
+        scanf("%c", &so);
+        clear();
+        if ((so == 'w') || (so == 'l')){
+            break;
+        }
+    }
+    printf("%d\n", so);
     // void loop()
+    cls(so);
     while (on[0] != 0){
         // Login
         while (logado == 0) {
             do{
+                printf("--------------------------\nSistema Alana Construções\n--------------------------\n");
                 printf("Digite seu e-mail: ");
                 scanf("%s", &email);
 
@@ -85,6 +101,7 @@ int main() {
                         key = i;
                         i = 999;
                     }
+                    printf("email aceito %d\n", email_aceito);
                 }
             
             } while (not_email == 1);
@@ -97,17 +114,24 @@ int main() {
                     printf("Tente Novamente!\n");
                 }
                 i++;
+                cls(so);
+                printf("--------------------------\nSistema Alana Construções\n--------------------------\n");
                 printf("Digite sua senha: ");
                 scanf("%s", &senha);
                 if (strcmp(senha, login[key].senha) == 0) {
                     senha_aceita = 1;
                     logado = 1;
-                    printf("Logado!\n");
+                    
                 }
             } while ((senha_aceita == 0) && (i < 5));
+            
+            cls(so);
         }
         
-        printf("\nOlá, %s!\nBem vindo de volta, com o que posso ajudar?\n", login[key].nome);
+        printf("Logado!");
+        sleep(3);
+        cls(so);
+        printf("Olá, %s!\nBem vindo de volta, com o que posso ajudar?\n", login[key].nome);
         on[1] = 1;
         clear();
         if (login[key].func == 0) {
@@ -128,11 +152,13 @@ int main() {
                 case 'Z':
                     on[1] = 0;
                     printf("Deslogando....\n");
+                    sleep(3);
                     break;
                 
                 default:
                     break;
                 }
+                system("cls");
             }
             
         } else if (login[key].func == 1) {
@@ -159,14 +185,24 @@ int main() {
             on[1] = 0;
             break;
         }
+        
     }
     return 0;
 }
 
 void clear(void){
-  /*
-  Foi necessário usar uma função para limpar o buffer
-  caso contrário, */
   char c;
   while(((c=getchar()) != '\n') && (c != EOF));
+}
+
+int cls(char sis){
+    if (sis == 'w') {
+        system("cls");
+    } else if (sis == 'l') {
+        system("clear");
+    } else {
+        printf("WTF!!\n");
+        return -1;
+    }
+    return 0;
 }
