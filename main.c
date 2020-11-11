@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <unistd.h>
 
 typedef struct{
-    int on;
-    int func;
+    int on; // 0 = não obra, 1 = Obra em andamento, 2 = Obra finalizada e aguardando encerramento
+    int func; // numero de funcionários
     float custo;
-} obra;
+} obras;
 
 typedef struct {
     char* titulo;
@@ -19,7 +19,7 @@ typedef struct{
 } caixa_de_email;
 
 typedef struct{
-    obra obras[5];
+    obras obra[5];
     caixa_de_email usuarios[4];
 
 } state;
@@ -32,27 +32,29 @@ typedef struct{
 } log;
 
 void clear(void);
-int cls(char sis);
 
 int main() {
     // void setup()
     void clear(void);
-    state estado;
-    int i;
-    int logado = 0;
+    state estado; // Guarda o estado do applicativo, independendo de usuário
+    int i; // Iterador
+    int logado = 0; // Estados: 0 == não logado; 1 == logado;
     int not_email = 1;
-    int email_aceito = 0;
-    int senha_aceita = 0;
-    int key = 0;
-    int on[] = {1,0};
-    int menu;
+    int senha_aceita = 0; // Estados: 0 == senha não aceita/processo de verificação; 1 == senha aceita;
+    int email_aceito = 0; // Estados: 0 == email não aceito/processo de verificação; 1 == email aceito;
+    int key = 0; // guarda o índice da conta para login, quando logado para operações na conta;
+    int on[] = {1,0}; /*
+    on[0]: Estados: 0 == fora do main loop/fim do programa; 1 == retorna ao login;
+    on[1]: Estados: 0 == dentro do loop das funções/logado; 1 == fora do loop/logout;
+    */
+    int so = -1; // Se encarrega do inteiro que vai no índice do "sis[so]";
     char email[24];
     char senha[24];
-    char q = 'z';
-    char so = '0';
-    char* sis[2] = {"cls", "clear"};
+    char q = 'z'; // Guarda o caractere dos menus 
+    char* sis[2] = {"cls", "clear"}; //Limpa o prompt Estados: 0 -> "cls" == para WIN; 1 -> "clear" == para UNIX & BSD;
     log login[4];
 
+    // Def
     strcpy(login[1].email, "allanlucas@empresa.com");
     strcpy(login[1].senha, "123");
     login[1].func = 1; //"Engenheiro"
@@ -72,65 +74,28 @@ int main() {
     strcpy(login[0].senha, "000");
     login[0].func = 0; //"Gestor UNIESP"
     strcpy(login[0].nome, "Lucas");
+
+    for (i = 0; i < 4; i++)
+        estado.obra[i].on = 0;
     
     while (3 > 2)
     {
-        printf("Qual SO:\n\tW. Windows\n\tL. Linux/Mac\nletra em minúsculo >>>");
-        scanf("%c", &so);
-        clear();
-        if ((so == 'w') || (so == 'l')){
+        printf("Qual SO:\n\t0. Windows\n\t1. Linux/Mac\nletra em minúsculo >>>");
+        scanf("%i", &so);
+        // clear();
+        if ((so == 0) || (so == 1)){
             break;
         }
     }
-    printf("%d\n", so);
+    printf("%i\n", so);
     // void loop()
-    cls(so);
+    system(sis[so]);
     while (on[0] != 0){
-        // Login
-        while (logado == 0) {
-            do{
-                printf("--------------------------\nSistema Alana Construções\n--------------------------\n");
-                printf("Digite seu e-mail: ");
-                scanf("%s", &email);
-
-                for (i = 0; i < 4; i++) {
-                    //printf("%s: %i\n", login[i], i);
-                    if (strcmp(email, login[i].email) == 0) {
-                        email_aceito = 1;
-                        not_email = 0;
-                        key = i;
-                        i = 999;
-                    }
-                    printf("email aceito %d\n", email_aceito);
-                }
-            
-            } while (not_email == 1);
-            
-            i=0;
-            //printf("%i\n", key);
-
-            do{
-                if (i > 0) {
-                    printf("Tente Novamente!\n");
-                }
-                i++;
-                cls(so);
-                printf("--------------------------\nSistema Alana Construções\n--------------------------\n");
-                printf("Digite sua senha: ");
-                scanf("%s", &senha);
-                if (strcmp(senha, login[key].senha) == 0) {
-                    senha_aceita = 1;
-                    logado = 1;
-                    
-                }
-            } while ((senha_aceita == 0) && (i < 5));
-            
-            cls(so);
-        }
-        
+        // Login     
+        key = 0;
         printf("Logado!");
         sleep(3);
-        cls(so);
+        system(sis[so]);
         printf("Olá, %s!\nBem vindo de volta, com o que posso ajudar?\n", login[key].nome);
         on[1] = 1;
         clear();
@@ -146,6 +111,7 @@ int main() {
                     /* code */
                 case 'A':
                     printf("Criamos uma nova Obra!!!\n");
+                    sleep(3);
                     break;
                 case 'z':
                     /* code */
@@ -193,16 +159,4 @@ int main() {
 void clear(void){
   char c;
   while(((c=getchar()) != '\n') && (c != EOF));
-}
-
-int cls(char sis){
-    if (sis == 'w') {
-        system("cls");
-    } else if (sis == 'l') {
-        system("clear");
-    } else {
-        printf("WTF!!\n");
-        return -1;
-    }
-    return 0;
 }
