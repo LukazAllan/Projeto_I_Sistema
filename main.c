@@ -32,24 +32,28 @@ typedef struct{
 } log;
 
 void clear(void);
+int temObra(state est);
+int naotemObra(state est);
+int nao(int inteiro);
 
 int main() {
     // void setup()
     void clear(void);
     state estado; // Guarda o estado do applicativo, independendo de usuário
     int i; // Iterador
-    int logado = 0; // Estados: 0 == não logado; 1 == logado;
-    int not_email = 1;
-    int senha_aceita = 0; // Estados: 0 == senha não aceita/processo de verificação; 1 == senha aceita;
-    int email_aceito = 0; // Estados: 0 == email não aceito/processo de verificação; 1 == email aceito;
+    // int sel; // Iterador
+    // int logado = 0; // Estados: 0 == não logado; 1 == logado;
+    // int not_email = 1;
+    // int senha_aceita = 0; // Estados: 0 == senha não aceita/processo de verificação; 1 == senha aceita;
+    // int email_aceito = 0; // Estados: 0 == email não aceito/processo de verificação; 1 == email aceito;
     int key = 0; // guarda o índice da conta para login, quando logado para operações na conta;
     int on[] = {1,0}; /*
     on[0]: Estados: 0 == fora do main loop/fim do programa; 1 == retorna ao login;
     on[1]: Estados: 0 == dentro do loop das funções/logado; 1 == fora do loop/logout;
     */
     int so = -1; // Se encarrega do inteiro que vai no índice do "sis[so]";
-    char email[24];
-    char senha[24];
+    // char email[24];
+    // char senha[24];
     char q = 'z'; // Guarda o caractere dos menus 
     char* sis[2] = {"cls", "clear"}; //Limpa o prompt Estados: 0 -> "cls" == para WIN; 1 -> "clear" == para UNIX & BSD;
     log login[4];
@@ -110,7 +114,11 @@ int main() {
                 case 'a':
                     /* code */
                 case 'A':
-                    printf("Criamos uma nova Obra!!!\n");
+                    if (naotemObra(estado) == -1){
+                        printf("Limite Alcançado, não é possível criar mais uma obra.\n");
+                    } else {
+                        printf("OBRA CRIADA!!!\n");
+                    }
                     sleep(3);
                     break;
                 case 'z':
@@ -142,14 +150,14 @@ int main() {
             break;
 
           default:
-            logado = 0;
-            not_email = 1;
-            email_aceito = 0;
-            senha_aceita = 0;
-            key = 0;
-            on[0] = 1;
-            on[1] = 0;
             break;
+        //     logado = 0;
+        //     not_email = 1;
+        //     email_aceito = 0;
+        //     senha_aceita = 0;
+        //     key = 0;
+        //     on[0] = 1;
+        //     on[1] = 0;
         }
         
     }
@@ -159,4 +167,29 @@ int main() {
 void clear(void){
   char c;
   while(((c=getchar()) != '\n') && (c != EOF));
+}
+
+int temObra(state est){
+    int qwertyuiop = 0; // Iterador
+    for (; qwertyuiop < 5; qwertyuiop++){
+        if (est.obra[qwertyuiop].on > 0)
+            return qwertyuiop;
+    }
+    return -1;
+}
+
+int naotemObra(state est){
+    int qwertyuiop = 0; // Iterador
+    for (; qwertyuiop < 5; qwertyuiop++){
+        if (est.obra[qwertyuiop].on == 0)
+            return qwertyuiop;
+    }
+    return -1;
+}
+
+int nao(int inteiro){
+    if (inteiro == 0)
+        return 1;
+    else 
+        return 0;
 }
