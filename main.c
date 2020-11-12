@@ -7,7 +7,8 @@
 typedef struct{
     int on; // 0 = não obra, 1 = Obra em andamento, 2 = Obra finalizada e aguardando encerramento
     int func; // numero de funcionários
-    float custo;
+    float custoInicial;
+    float custoFinal;
 } obras;
 
 typedef struct {
@@ -33,7 +34,7 @@ typedef struct{
 } log;
 
 void clear(void);
-int temObra(state est);
+int temObra(state est); //==> Retorna inteiro 
 int naotemObra(state est);
 int nao(int inteiro);
 
@@ -53,6 +54,7 @@ int main() {
     // on[0]: Estados: 0 == fora do main loop/fim do programa; 1 == retorna ao login;
     // on[1]: Estados: 0 == dentro do loop das funções/logado; 1 == fora do loop/logout;
     int so = -1; // Se encarrega do inteiro que vai no índice do "sis[so]";
+    float fput; // Guarda input do usuario em float 
     char email[24];
     char senha[24];
     char q = 'z'; // Guarda o caractere dos menus 
@@ -86,6 +88,21 @@ int main() {
     // for (i = 0; i < 4; i++)
     //     printf("%d.\n\t%s\n\t%s\n\t%d\n\t%s\n", i, login[i].email, login[i].senha, login[i].func, login[i].nome);
     
+    // estado.obra[0].on = 1;
+    // estado.obra[0].custoInicial = 2000;
+    // estado.obra[0].custoFinal = 2000;
+    // estado.obra[0].func = 40;
+
+    // estado.obra[1].on = 1;
+    // estado.obra[1].custoInicial = 3000;
+    // estado.obra[1].custoFinal = 3000;
+    // estado.obra[1].func = 100;
+    
+    // estado.obra[2].on = 1;
+    // estado.obra[2].custoInicial = 10000;
+    // estado.obra[2].custoFinal = 10000;
+    // estado.obra[2].func = 1000;
+
     while (3 > 2)
     {
         printf("Qual SO:\n\t0. Windows\n\t1. Linux/Mac\n>>>");
@@ -147,22 +164,59 @@ int main() {
         clear();
         if (login[key].func == 0) {
             //gestor();
+            int creatingObra;
             while (on[1] == 1){
-                printf("Menu\n\tA. Criar obra Nova\n\tZ. Deslogar\n>>> ");
+                printf("Menu\n\tA. Criar obra Nova\n\tB. Verificar Obras\tZ. Deslogar\n>>> ");
                 scanf("%c", &q);
                 clear();
                 switch (q)
                 {
+                case 'b':
+                    /* code */
+                case 'B':
+                    for (i = 0; i < 5; i++){
+                        printf("Obra %d\n", i+1);
+                        if (estado.obra[i].on == 0){
+                            printf("Estado: VAZIO\n");
+                        } else {
+                            if (estado.obra[i].on == 1){
+                                printf("Estado: EM ANDAMENTO\n");
+                            } else if (estado.obra[i].on == 2) {
+                                printf("Estado: AGURDANDO FINALIZAÇÃO\n");
+                            } else if ((estado.obra[i].on > 2) || (estado.obra[i].on < 0)){
+                                printf("Estado: ERRO ==> %d\n", estado.obra[i].on);
+                            }
+                            printf("\tCusto Inicial: R$%.2f\n\tCusto Final: R$%.2f\n\tFuncionarios: %d pessoas\n", estado.obra[i].custoInicial, estado.obra[i].custoFinal, estado.obra[i].func);
+                        }
+                    }
+                    break;
                 case 'a':
                     /* code */
                 case 'A':
-                    if (naotemObra(estado) == -1){
+                    creatingObra = naotemObra(estado);
+                    if (creatingObra == -1){
                         printf("Limite Alcancado, nao e possivel criar mais uma obra.\n");
                     } else {
+                        system(sis[so]);
+                        // clear();
+                        printf("Para criar a Obra quanto dinheiro sera inicialmente destinado?\nR$ ");
+                        scanf("%f", &fput);
+                        estado.obra[creatingObra].custoInicial = fput;
+                        estado.obra[creatingObra].custoFinal = fput;
+                        fput = 0;
+                        system(sis[so]);
+                        clear();
+                        printf("Quantos funcionarios serao empregados na obra?\nFuncionarios: ");
+                        scanf("%d", &estado.obra[creatingObra].func);
+                        system(sis[so]);
+                        clear();
+                        estado.obra[creatingObra].on = 1;
                         printf("OBRA CRIADA!!!\n");
+                        // sleep(2);
                     }
                     //sleep(3);
                     break;
+
                 case 'z':
                     /* code */
                 case 'Z':
@@ -174,7 +228,9 @@ int main() {
                 default:
                     break;
                 }
-                system("cls");
+                if ((q != 'b') && (q != 'B')){
+                    system(sis[so]);
+                }
             }
             
         } else if (login[key].func == 1) {
@@ -218,6 +274,14 @@ int temObra(state est){
             return qwertyuiop;
     }
     return -1;
+}
+
+int arraytemObra(state est){
+    int qwertyuiop = 0; // Iterador
+    int resposta[5] = {-1,-1,-1,-1,-1};
+    for (; qwertyuiop < 5; qwertyuiop++)
+        resposta[qwertyuiop] = est.obra[qwertyuiop].on;
+    return resposta;
 }
 
 int naotemObra(state est){
