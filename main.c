@@ -7,6 +7,7 @@
 typedef struct{
     int on; // 0 = não obra, 1 = Obra em andamento, 2 = Obra finalizada e aguardando encerramento
     int func; // numero de funcionários
+    float prog; // Referente ao progresso; Estado -1 esperando inicialização dos trabalhos; 0 = iniciado, 0 < prog < 1 = progresso, 1 = finalizado
     float custoInicial;
     float custoFinal;
 } obras;
@@ -34,8 +35,10 @@ typedef struct{
 } log;
 
 void clear(void);
-int temObra(state est); //==> Retorna inteiro 
-int naotemObra(state est);
+void titulo(char* texto);
+int getTemObra(state est); //==> Retorna inteiro
+int getArrayTemObra(state est, int n);
+int getNaoTemObra(state est);
 int nao(int inteiro);
 
 int main() {
@@ -54,6 +57,7 @@ int main() {
     // on[0]: Estados: 0 == fora do main loop/fim do programa; 1 == retorna ao login;
     // on[1]: Estados: 0 == dentro do loop das funções/logado; 1 == fora do loop/logout;
     int so = -1; // Se encarrega do inteiro que vai no índice do "sis[so]";
+    int qtobras = 5; // Quantidade de Obras
     float fput; // Guarda input do usuario em float 
     char email[24];
     char senha[24];
@@ -82,23 +86,26 @@ int main() {
     strcpy(login[2].nome, "Liriel");
     strcpy(login[0].nome, "Lucas");
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < qtobras; i++)
         estado.obra[i].on = 0;
 
     // for (i = 0; i < 4; i++)
     //     printf("%d.\n\t%s\n\t%s\n\t%d\n\t%s\n", i, login[i].email, login[i].senha, login[i].func, login[i].nome);
     
-    // estado.obra[0].on = 1;
+    // estado.obra[0].on = 1;   
+    // estado.obra[0].prog = -1.0;
     // estado.obra[0].custoInicial = 2000;
     // estado.obra[0].custoFinal = 2000;
     // estado.obra[0].func = 40;
 
-    // estado.obra[1].on = 1;
-    // estado.obra[1].custoInicial = 3000;
-    // estado.obra[1].custoFinal = 3000;
-    // estado.obra[1].func = 100;
+    estado.obra[1].on = 1;
+    estado.obra[1].prog = -1.0;
+    estado.obra[1].custoInicial = 3000;
+    estado.obra[1].custoFinal = 3000;
+    estado.obra[1].func = 100;
     
-    // estado.obra[2].on = 1;
+    // estado.obra[2].on = 1;   
+    // estado.obra[2].prog = -1.0;
     // estado.obra[2].custoInicial = 10000;
     // estado.obra[2].custoFinal = 10000;
     // estado.obra[2].func = 1000;
@@ -119,8 +126,7 @@ int main() {
         while (logado == 0) {
             do{
                 system(sis[so]);
-                printf("--------------------------\nSistema Alana Construcoes\n--------------------------\n");
-                printf("Digite seu e-mail: ");
+                titulo("Digite seu e-mail: ");
                 scanf("%s", email);
 
                 for (i = 0; i < 4; i++) {
@@ -139,7 +145,7 @@ int main() {
             //printf("%i\n", key);
             system(sis[so]);
             do{
-                printf("--------------------------\nSistema Alana Construcoes\n--------------------------\n");
+                titulo(" ");
                 if (i > 0) {
                     printf("Tente Novamente!\n");
                 }
@@ -159,11 +165,13 @@ int main() {
         printf("Logado!");
         //sleep(3);
         system(sis[so]);
-        printf("Ola, %s!\nBem vindo de volta, com o que posso ajudar?\n", login[key].nome);
+        printf("Ola, %s!\nSeja bem-vindo, com o que posso ajudar?\n", login[key].nome);
         on[1] = 1;
         clear();
         if (login[key].func == 0) {
-            //gestor();
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= GESTOR -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             int creatingObra;
             while (on[1] == 1){
                 printf("Menu\n\tA. Criar obra Nova\n\tB. Verificar Obras\tZ. Deslogar\n>>> ");
@@ -193,7 +201,7 @@ int main() {
                 case 'a':
                     /* code */
                 case 'A':
-                    creatingObra = naotemObra(estado);
+                    creatingObra = getNaoTemObra(estado);
                     if (creatingObra == -1){
                         printf("Limite Alcancado, nao e possivel criar mais uma obra.\n");
                     } else {
@@ -211,6 +219,7 @@ int main() {
                         system(sis[so]);
                         clear();
                         estado.obra[creatingObra].on = 1;
+                        estado.obra[creatingObra].prog = -1.0;
                         printf("OBRA CRIADA!!!\n");
                         // sleep(2);
                     }
@@ -234,28 +243,109 @@ int main() {
             }
             
         } else if (login[key].func == 1) {
-            //eng();
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= ENGENHEIRO -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            while (on[1] == 1){
+                printf("Menu\n\tA. Iniciar obras\n\tZ. Deslogar\n>>> ");
+                scanf("%c", &q);
+                clear();
+                switch (q){
+                    case 'a':
+                        //code
+                    case 'A':
+                        printf("Verificando se o gestor comecou alguma obra...\n");
+                        for (i = 0; i < qtobras; i++) {
+                            if (getArrayTemObra(estado, i) == 1){
+                                printf("Obra %i iniciada!\n", i+1);
+                                printf("Dar início as obras? [s/n] >>>\n");
+                                scanf("%c", &q);
+                                switch (q){
+                                    case 's':
+                                    case 'S':
+                                        estado.obra[i].prog = 0.0;
+                                        printf("Início das obras! Obra %i iniciada\n", i+1);
+                                    default:
+                                        printf("");
+                                }
+                            } else {
+                                printf("Obra %i não iniciada!\n", i+1);
+                            }
+                        }
+                        break;
+                    case 'b':
+                    case 'B':
+                        printf("\n");
+                    case 'z':
+                    case 'Z':
+                        on[1] = 0;
+                        printf("Deslogando....\n");
+                        //sleep(3);
+                        break;
+                }
+            }
+        } else if (login[key].func == 2) {
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- MESTRE DE OBRAS -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            
+            while (on[1] == 1){
+                printf("Nao ha nada o que fazer aqui... AINDA!\n\tZ. Deslogar\n>>> ");
+                scanf("%c", &q);
+                clear();
+                switch (q){
+                    case 'z':
+                    case 'Z':
+                        on[1] = 0;
+                        printf("Deslogando....\n");
+                        //sleep(3);
+                        break;
+                }
+            }
+        } else if (login[key].func == 3) {
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= FORNECEDOR -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
+            // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            
+            while (on[1] == 1){
+                printf("Nao ha nada o que fazer aqui... AINDA!\n\tZ. Deslogar\n>>> ");
+                scanf("%c", &q);
+                clear();
+                switch (q){
+                    case 'z':
+                    case 'Z':
+                        on[1] = 0;
+                        printf("Deslogando....\n");
+                        //sleep(3);
+                        break;
+                }
+            }
         } else {
             printf("ERROR FATAL!!! USER TYPE NOT RECOGNIZED!!!\n");
         }
-
-        printf("DESEJA SAIR [s/n]: ");
+        titulo("Deseja logar novamente? [s/n]: ");
         scanf("%c", &q);
         switch (q){
-          case 's':
-            on[0] = 0;
-            printf("Volte Sempre, %s!!!\n", login[key].nome);
-            break;
+            case 'S':
+            case 's':
+                logado = 0;
+                not_email = 1;
+                email_aceito = 0;
+                senha_aceita = 0;
+                key = 0;
+                on[0] = 1;
+                on[1] = 0;
+                break;
 
-          default:
-            break;
-        //     logado = 0;
-        //     not_email = 1;
-        //     email_aceito = 0;
-        //     senha_aceita = 0;
-        //     key = 0;
-        //     on[0] = 1;
-        //     on[1] = 0;
+            default:
+                titulo("Tem certeza? Iremos desligar o sistema, e voce não terá mais acesso ao sistema\nSIM ou NÃO [s/n] ");
+                clear();
+                scanf("%c", &q);
+                if ((q == 's') || (q == 'S')) {
+                    on[0] = 0;
+                    printf("Volte Sempre, %s!!!\n", login[key].nome);
+                }
+                break;
         }
         
     }
@@ -267,7 +357,7 @@ void clear(void){
   while(((c=getchar()) != '\n') && (c != EOF));
 }
 
-int temObra(state est){
+int getTemObra(state est){
     int qwertyuiop = 0; // Iterador
     for (; qwertyuiop < 5; qwertyuiop++){
         if (est.obra[qwertyuiop].on > 0)
@@ -276,15 +366,15 @@ int temObra(state est){
     return -1;
 }
 
-int arraytemObra(state est){
-    int qwertyuiop = 0; // Iterador
-    int resposta[5] = {-1,-1,-1,-1,-1};
-    for (; qwertyuiop < 5; qwertyuiop++)
-        resposta[qwertyuiop] = est.obra[qwertyuiop].on;
-    return resposta;
+int getArrayTemObra(state est, int n){
+    if ((0 <= n) && (n < 5)){
+        return est.obra[n].on;
+    } else {
+        return -1;
+    }
 }
 
-int naotemObra(state est){
+int getNaoTemObra(state est){
     int qwertyuiop = 0; // Iterador
     for (; qwertyuiop < 5; qwertyuiop++){
         if (est.obra[qwertyuiop].on == 0)
@@ -298,4 +388,9 @@ int nao(int inteiro){
         return 1;
     else 
         return 0;
+}
+
+void titulo(char* texto){
+    printf("--------------------------\nSistema Alana Construcoes\n--------------------------\n");
+    printf("%s\n", texto);
 }
