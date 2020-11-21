@@ -4,26 +4,46 @@
 #include <time.h>
 #include <locale.h>
 
+#define QTOBRAS 5 // Quantidade de Obras
+
+typedef struct{
+    int func1;
+    int func2;
+    int func3;
+} funcs;
+
 typedef struct{
     int on; // 0 = não obra, 1 = Obra em andamento, 2 = Obra finalizada e aguardando encerramento
-    int func; // numero de funcionários
-    float prog; // Referente ao progresso; Estado -1 esperando inicialização dos trabalhos; 0 = iniciado, 0 < prog < 1 = progresso, 1 = finalizado
+    funcs func; // numero de funcionários
+    int prog; // Referente ao progresso; Estado -1 esperando inicialização dos trabalhos; 0 = iniciado, 0 < prog < 100 = progresso, 100 = finalizado
     float custoInicial;
     float custoFinal;
+    float orc; // Orçamento, teto do gasto
 } obras;
 
 typedef struct {
-    char* titulo;
-    char corpo[144];
-} email;
+    int result;
+    // Estados
+    // 0: Enviado aguardando resposta
+    //-1: Rejeitado
+    // 1: Aceito;
+    int response;
+    // Estados
+    //-1: Não enviado
+    // 0: Enviado aguardando resposta
+    // 1: Retorno;
+    char ida[144]; // Requerimento em 144 caracteres.
+    char volta[144]; // Resposta ao requerimento em 144 caracteres.
+} request;
+
+// typedef struct{
+//     req solicitacao[10];
+// } caixa_de_email;
 
 typedef struct{
-    email emails[10];
-} caixa_de_email;
-
-typedef struct{
-    obras obra[5];
-    caixa_de_email usuarios[4];
+    obras obra[QTOBRAS];
+    request funcobra[QTOBRAS]; // comunicação sobre materiais
+    request fobra[QTOBRAS]; // comunicação sobre materiais
 
 } state;
 
@@ -39,7 +59,9 @@ void titulo(char* texto);
 int getTemObra(state est); //==> Retorna inteiro
 int getArrayTemObra(state est, int n);
 int getNaoTemObra(state est);
+int getReqFornecedor(state est, int n);
 int nao(int inteiro);
+float getfuncsalario(int n);
 
 int main() {
     // void setup()
@@ -57,7 +79,6 @@ int main() {
     // on[0]: Estados: 0 == fora do main loop/fim do programa; 1 == retorna ao login;
     // on[1]: Estados: 0 == dentro do loop das funções/logado; 1 == fora do loop/logout;
     int so = -1; // Se encarrega do inteiro que vai no índice do "sis[so]";
-    int qtobras = 5; // Quantidade de Obras
     float fput; // Guarda input do usuario em float 
     char email[24];
     char senha[24];
@@ -86,7 +107,7 @@ int main() {
     strcpy(login[2].nome, "Liriel");
     strcpy(login[0].nome, "Lucas");
 
-    for (i = 0; i < qtobras; i++)
+    for (i = 0; i < QTOBRAS; i++)
         estado.obra[i].on = 0;
 
     // for (i = 0; i < 4; i++)
@@ -94,21 +115,30 @@ int main() {
     
     // estado.obra[0].on = 1;   
     // estado.obra[0].prog = -1.0;
-    // estado.obra[0].custoInicial = 2000;
-    // estado.obra[0].custoFinal = 2000;
-    // estado.obra[0].func = 40;
+    // estado.obra[0].func1 = 40;
+    // estado.obra[0].func.func2 = 40;
+    // estado.obra[0].func.func.func3 = 40;
+    // estado.obra[0].custoInicial = getfuncsalario(1)*estado.obra[0].func.func1 + getfuncsalario(2)*estado.obra[0].func.func2 + getfuncsalario(3)*estado.obra[0].func.func3 + 5000.00;
+    // estado.obra[0].custoFinal = estado.obra[0].custoFinal;
+    // estado.obra[0].orc = estado.obra[0].custoFinal + 4000;
 
     estado.obra[1].on = 1;
     estado.obra[1].prog = -1.0;
-    estado.obra[1].custoInicial = 3000;
-    estado.obra[1].custoFinal = 3000;
-    estado.obra[1].func = 100;
+    estado.obra[1].func.func1 = 120;
+    estado.obra[1].func.func2 = 100;
+    estado.obra[1].func.func3 = 50;
+    estado.obra[1].custoInicial = getfuncsalario(1)*estado.obra[1].func.func1 + getfuncsalario(2)*estado.obra[1].func.func2 + getfuncsalario(3)*estado.obra[1].func.func3 + 3000.00;
+    estado.obra[1].custoFinal = estado.obra[1].custoInicial;
+    estado.obra[1].orc = estado.obra[1].custoFinal + 4000;
     
     // estado.obra[2].on = 1;   
     // estado.obra[2].prog = -1.0;
-    // estado.obra[2].custoInicial = 10000;
-    // estado.obra[2].custoFinal = 10000;
-    // estado.obra[2].func = 1000;
+    // estado.obra[2].func.func1 = 200;
+    // estado.obra[2].func.func2 = 90;
+    // estado.obra[2].func.func3 = 130;
+    // estado.obra[2].custoInicial = getfuncsalario(1)*estado.obra[2].func.func1 + getfuncsalario(2)*estado.obra[2].func.func2 + getfuncsalario(3)*estado.obra[2].func.func3 + 4000.00;
+    // estado.obra[2].custoFinal = estado.obra[2].custoFinal;
+    // estado.obra[2].orc = estado.obra[2].custoFinal + 4000;
 
     while (3 > 2)
     {
@@ -174,7 +204,7 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             int creatingObra;
             while (on[1] == 1){
-                printf("Menu\n\tA. Criar obra Nova\n\tB. Verificar Obras\tZ. Deslogar\n>>> ");
+                printf("Menu\n\tA. Criar obra Nova\tB. Verificar Obras\n\tZ. Deslogar\n>>> ");
                 scanf("%c", &q);
                 clear();
                 switch (q)
@@ -194,7 +224,12 @@ int main() {
                             } else if ((estado.obra[i].on > 2) || (estado.obra[i].on < 0)){
                                 printf("Estado: ERRO ==> %d\n", estado.obra[i].on);
                             }
-                            printf("\tCusto Inicial: R$%.2f\n\tCusto Final: R$%.2f\n\tFuncionarios: %d pessoas\n", estado.obra[i].custoInicial, estado.obra[i].custoFinal, estado.obra[i].func);
+                            printf("\tOrcamento:     R$%.2f\n\tCusto Inicial: R$%.2f\n\tCusto Final:   R$%.2f\n\tFuncionarios:  %d pessoas\n", estado.obra[i].orc, estado.obra[i].custoInicial, estado.obra[i].custoFinal, estado.obra[i].func.func1 + estado.obra[i].func.func2 + estado.obra[i].func.func3);
+                            if (getBalanco(estado, i) > 0){
+                                printf("\tBalanço:       R$+%.2f\n", getBalanco(estado, i));
+                            } else {
+                                printf("\tBalanço:       R$%.2f\n", getBalanco(estado, i));
+                            }
                         }
                     }
                     break;
@@ -207,15 +242,28 @@ int main() {
                     } else {
                         system(sis[so]);
                         // clear();
-                        printf("Para criar a Obra quanto dinheiro sera inicialmente destinado?\nR$ ");
-                        scanf("%f", &fput);
-                        estado.obra[creatingObra].custoInicial = fput;
-                        estado.obra[creatingObra].custoFinal = fput;
-                        fput = 0;
+                        printf("Quantos funcionarios do tipo 1 serao empregados na obra?\nFuncionarios: ");
+                        scanf("%d", &estado.obra[creatingObra].func.func1);
                         system(sis[so]);
                         clear();
-                        printf("Quantos funcionarios serao empregados na obra?\nFuncionarios: ");
-                        scanf("%d", &estado.obra[creatingObra].func);
+                        printf("Quantos funcionarios do tipo 2 serao empregados na obra?\nFuncionarios: ");
+                        scanf("%d", &estado.obra[creatingObra].func.func2);
+                        system(sis[so]);
+                        clear();
+                        printf("Quantos funcionarios do tipo 3 serao empregados na obra?\nFuncionarios: ");
+                        scanf("%d", &estado.obra[creatingObra].func.func3);
+                        system(sis[so]);
+                        clear();
+                        printf("Quanto dinheiro sera inicialmente destinado em materiais?\nR$ ");
+                        scanf("%f", &fput);
+                        system(sis[so]);
+                        estado.obra[creatingObra].custoInicial = getfuncsalario(1)*estado.obra[creatingObra].func.func1 + getfuncsalario(2)*estado.obra[creatingObra].func.func2 + getfuncsalario(3)*estado.obra[creatingObra].func.func3 + fput;
+                        estado.obra[creatingObra].custoFinal = estado.obra[creatingObra].custoInicial;
+                        clear();
+                        printf("Nesta obra o custo é R$%.2f.\nQuanto dinheiro sera inicialmente destinado a mais, levando em conta,\neventuais perdas e contratacoes de novos funcionarios?\nR$ ", estado.obra[creatingObra].custoInicial);
+                        scanf("%f", &fput);
+                        estado.obra[creatingObra].orc = estado.obra[creatingObra].custoInicial + fput;
+                        fput = 0;
                         system(sis[so]);
                         clear();
                         estado.obra[creatingObra].on = 1;
@@ -247,7 +295,7 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= ENGENHEIRO -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             while (on[1] == 1){
-                printf("Menu\n\tA. Iniciar obras\n\tZ. Deslogar\n>>> ");
+                printf("Menu\n\tA. Iniciar obras\tB. Contratar Funcionários\nC. \tZ. Deslogar\n>>> ");
                 scanf("%c", &q);
                 clear();
                 switch (q){
@@ -255,7 +303,7 @@ int main() {
                         //code
                     case 'A':
                         printf("Verificando se o gestor comecou alguma obra...\n");
-                        for (i = 0; i < qtobras; i++) {
+                        for (i = 0; i < QTOBRAS; i++) {
                             if (getArrayTemObra(estado, i) == 1){
                                 printf("Obra %i iniciada!\n", i+1);
                                 printf("Dar início as obras? [s/n] >>>\n");
@@ -263,7 +311,7 @@ int main() {
                                 switch (q){
                                     case 's':
                                     case 'S':
-                                        estado.obra[i].prog = 0.0;
+                                        estado.obra[i].prog = 0;
                                         printf("Início das obras! Obra %i iniciada\n", i+1);
                                     default:
                                         printf("");
@@ -290,7 +338,7 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             
             while (on[1] == 1){
-                printf("Nao ha nada o que fazer aqui... AINDA!\n\tZ. Deslogar\n>>> ");
+                printf("Menu\n\tA. Avançar obras\n\tZ. Deslogar\n>>> ");
                 scanf("%c", &q);
                 clear();
                 switch (q){
@@ -338,7 +386,7 @@ int main() {
                 break;
 
             default:
-                titulo("Tem certeza? Iremos desligar o sistema, e voce não terá mais acesso ao sistema\nSIM ou NÃO [s/n] ");
+                titulo("Tem certeza? Iremos desligar o sistema, e voce não tera mais acesso ao sistema\nSIM ou NAO [s/n] ");
                 clear();
                 scanf("%c", &q);
                 if ((q == 's') || (q == 'S')) {
@@ -383,6 +431,10 @@ int getNaoTemObra(state est){
     return -1;
 }
 
+int getReqFornecedor(state est, int n){
+    return 0;
+}
+
 int nao(int inteiro){
     if (inteiro == 0)
         return 1;
@@ -393,4 +445,24 @@ int nao(int inteiro){
 void titulo(char* texto){
     printf("--------------------------\nSistema Alana Construcoes\n--------------------------\n");
     printf("%s\n", texto);
+}
+
+float getfuncsalario(int n){
+    if (n == 1){
+        return 1079.00;
+    } else if (n == 2) {
+        return 1915.32;
+    } else if (n == 3)
+    {
+        return 2500.65;
+    }
+    return -1.0;
+}
+
+float getBalanco(state est, n){
+    /*Esta função retorna o balanço da Obra.
+    :param state est: recebe o estado das obras.
+    :param int n: recebe o índice da obra.
+    :return: balanço*/
+    return est.obra[n].orc - est.obra[n].custoFinal;
 }
