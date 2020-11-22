@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <locale.h>
 
 #define QTOBRAS 5 // Quantidade de Obras
 
@@ -78,20 +76,19 @@ void clear(void);
 void titulo(char* texto);
 void imprime(char* msg, char* limiters, int spaces);
 void msgput(char* msg, char* end);
-int getTemObra(obras* est); //==> Retorna inteiro
-int getArrayTemObra(obras* est, int n);
-int getNaoTemObra(obras* est);
-int getReqFornecedor(obras* est, int n);
+int getTemObra(); //==> Retorna inteiro
+int getArrayTemObra(int n);
+int getNaoTemObra();
 int nao(int inteiro);
+float getBalanco(int n);
 float getfuncsalario(int n);
+obras obra[QTOBRAS];
 
 int main() {
     // void setup()
-    setlocale(LC_ALL,"");
     void clear(void);
-    obras obra[QTOBRAS];
     //state estado; // Guarda o estado do applicativo, independendo de usuário
-    int i, i2; // Iterador
+    int i; // Iterador
     int iput; // Guarda input do usuario em int
     int iput1; // Guarda input do usuario em int
     int iput2; // Guarda input do usuario em int
@@ -142,6 +139,10 @@ int main() {
         obra[i].mobra.result = 999;
     }
 
+    
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= TESTES -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // for (i = 0; i < 4; i++)
     //     printf("%d.\n\t%s\n\t%s\n\t%d\n\t%s\n", i, login[i].email, login[i].senha, login[i].func, login[i].nome);
     
@@ -162,6 +163,12 @@ int main() {
     obra[1].custoInicial = getfuncsalario(1)*obra[1].func.func1 + getfuncsalario(2)*obra[1].func.func2 + getfuncsalario(3)*obra[1].func.func3 + 3000.00;
     obra[1].custoFinal = obra[1].custoInicial;
     obra[1].orc = obra[1].custoFinal + 4000;
+    obra[1].mobra.result = 0;
+    obra[1].mobra.response = 1;
+    strcpy(&obra[1].mobra.mat, "Cimento");
+    obra[1].mobra.precos[0] = 200.99;
+    obra[1].mobra.precos[1] = 100.99;
+    obra[1].mobra.precos[2] = 150.99;
     
     // obra[2].on = 1;   
     // obra[2].prog = -1.0;
@@ -257,10 +264,10 @@ int main() {
                                 printf("Estado: ERRO ==> %d\n", obra[i].on);
                             }
                             printf("\tOrcamento:     R$%.2f\n\tCusto Inicial: R$%.2f\n\tCusto Final:   R$%.2f\n\tFuncionarios:  %d pessoas\n", obra[i].orc, obra[i].custoInicial, obra[i].custoFinal, obra[i].func.func1 + obra[i].func.func2 + obra[i].func.func3);
-                            if (getBalanco(obra, i) > 0){
-                                printf("\tBalanço:       R$+%.2f\n", getBalanco(obra, i));
+                            if (getBalanco(i) > 0){
+                                printf("\tBalanço:       R$+%.2f\n", getBalanco(i));
                             } else {
-                                printf("\tBalanço:       R$%.2f\n", getBalanco(obra, i));
+                                printf("\tBalanço:       R$%.2f\n", getBalanco(i));
                             }
                         }
                     }
@@ -336,7 +343,7 @@ int main() {
                     case 'A':
                         printf("Verificando se o gestor comecou alguma obra...\n");
                         for (i = 0; i < QTOBRAS; i++) {
-                            if (getArrayTemObra(obra, i) == 1){
+                            if (getArrayTemObra(i) == 1){
                                 printf("Obra %i iniciada!\n", i+1);
                                 printf("Dar início as obras? [s/n] >>>\n");
                                 scanf("%c", &q);
@@ -346,7 +353,7 @@ int main() {
                                         obra[i].prog = 0;
                                         printf("Início das obras! Obra %i iniciada\n", i+1);
                                     default:
-                                        printf("");
+                                        printf(" ");
                                 }
                             } else {
                                 printf("Obra %i não iniciada!\n", i+1);
@@ -360,11 +367,8 @@ int main() {
                         system(sis[so]);
                         printf("Quantos deles?\n >>>");
                         scanf("%d", &iput1);
-                        iput2 = -1;
-                        while ((iput2 < 0) || (iput2 > QTOBRAS)){
-                            printf("Para qual obra? ");
-                            scanf("%d", &iput2);
-                        }
+                        printf("Para qual obra? ");
+                        scanf("%d", &iput2);
                         if (obra[iput2].on > 0){
                             printf("O impacto dessa decisão aumentará os custos:\n\tAntes:      R$%.2f\n\tAgora:     ⬆R$%.2f\n\tOrcamento:  R$%.2f\n", obra[iput2].custoFinal, obra[iput2].custoFinal + getfuncsalario(iput)*iput1, obra[iput2].orc);
                         } else {
@@ -379,7 +383,7 @@ int main() {
                         iput = 0;
                         printf("CAIXA DE MENSAGENS\n");
                         for (i = 0; i < QTOBRAS; i++){
-                            if ((obra[i].on) && (obra[i].fobra.result == 0 ) ||(obra[i].on) && (obra[i].mobra.result == 0) ||(obra[i].on) && (obra[i].mobra.response == 0)){
+                            if ((obra[i].on == 1) && ((obra[i].fobra.result == 0 ) || (obra[i].mobra.result == 0) || (obra[i].mobra.response == 0))){
                                 iput = iput + 1;
                                 printf("Obra %d tem pedidos pendentes!\n", i+1);
                             }
@@ -388,20 +392,17 @@ int main() {
                             printf("\tNao há pedidos a serem atendidos\n");
                             break;
                         } else {
-                            iput1 = -1;
-                            while ((-1 >= iput1) || (iput1 >= 5)){
-                                printf("De qual obra deseja ver os pedidos?\n>>> ");
-                                scanf("%d", &iput1);
-                                iput1 = iput1 - 1;
-                            }
-                            if ((obra[iput1].fobra.result == != 999) || (obra[iput1].mobra.result == != 999)){
+                            printf("De qual obra deseja ver os pedidos? 1 - 5\n>>> ");
+                            scanf("%d", &iput1);
+                            iput1 = iput1 - 1;
+                            if ((obra[iput1].fobra.result != 999) || (obra[iput1].mobra.result != 999)){
                                 iput2 = 0;
                                 while (iput2 != 3){
                                     printf("Pedidos:\n");
-                                    if (obra[iput1].fobra.result == != 999){
+                                    if (obra[iput1].fobra.result != 999){
                                         printf("1. Funcionários\n");
                                     }
-                                    if (obra[iput1].mobra.result == != 999){
+                                    if (obra[iput1].mobra.result != 999){
                                         printf("2. Materiais\n");
                                     }
                                     printf("3. Voltar\n");
@@ -451,7 +452,7 @@ int main() {
                                             break;
                                         case 2:
                                             while (menu3 == 0){
-                                                printf("Pedido:\n\tEstado: ");
+                                                printf("Pedido: %s\n\tEstado: ", obra[iput1].mobra.mat);
                                                 switch (obra[iput1].mobra.result){
                                                     case 0:
                                                         printf("AGUARDANDO RESPOSTA");
@@ -489,7 +490,19 @@ int main() {
                                                         scanf("%d", &answ);
                                                         switch (answ){
                                                             case 1:
-                                                                //code
+                                                                obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[0];
+                                                                obra[iput1].mobra.result = 1;
+                                                                break;
+                                                            case 2:
+                                                                obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[1];
+                                                                obra[iput1].mobra.result = 1;
+                                                                break;
+                                                            case 3:
+                                                                obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[2];
+                                                                obra[iput1].mobra.result = 1;
+                                                                break;
+                                                            case 4:
+                                                                obra[iput1].mobra.result = -1;
                                                                 break;
                                                             default:
                                                                 //code
@@ -497,10 +510,21 @@ int main() {
                                                         }
                                                         break;
                                                     case 2:
-                                                        //answ
+                                                        obra[iput1].mobra.response = 0;
+                                                        printf("Solicitacao Enviada!\n");
                                                         break;
                                                     case 3:
-                                                        //answ
+                                                        msgput("Nesta secao voce so podera negar o pedido.\nVolte, se nao quiser fazer isso.\n0. Voltar\t1. Continuar", "");
+                                                        scanf("%d", &answ);
+                                                        switch (answ){
+                                                            case 1:
+                                                                obra[iput1].mobra.response = -1;
+                                                                printf("PEDIDO NEGADO!\n");
+                                                                break;
+                                                            default:
+                                                                //code
+                                                                break;
+                                                        }
                                                         break;
                                                     case 4:
                                                         menu3 = -1; // Voltando ao menu anterior alterando menu3
@@ -598,34 +622,30 @@ void clear(void){
   while(((c=getchar()) != '\n') && (c != EOF));
 }
 
-int getTemObra(obras* est){
+int getTemObra(){
     int qwertyuiop = 0; // Iterador
     for (; qwertyuiop < 5; qwertyuiop++){
-        if (est[qwertyuiop].on > 0)
+        if (obra[qwertyuiop].on > 0)
             return qwertyuiop;
     }
     return -1;
 }
 
-int getArrayTemObra(obras* est, int n){
+int getArrayTemObra(int n){
     if ((0 <= n) && (n < 5)){
-        return est[n].on;
+        return obra[n].on;
     } else {
         return -1;
     }
 }
 
-int getNaoTemObra(obras* est){
+int getNaoTemObra(){
     int qwertyuiop = 0; // Iterador
     for (; qwertyuiop < 5; qwertyuiop++){
-        if (est[qwertyuiop].on == 0)
+        if (obra[qwertyuiop].on == 0)
             return qwertyuiop;
     }
     return -1;
-}
-
-int getReqFornecedor(obras* est, int n){
-    return 0;
 }
 
 int nao(int inteiro){
@@ -652,20 +672,21 @@ float getfuncsalario(int n){
     return -1.0;
 }
 
-float getBalanco(obras* est, int n){
+float getBalanco(int n){
     /*Esta função retorna o balanço da Obra.
     :param state est: recebe o estado das obras.
     :param int n: recebe o índice da obra.
     :return: balanço*/
-    return est[n].orc - est[n].custoFinal;
+    return obra[n].orc - obra[n].custoFinal;
 }
 
 void imprime(char* msg, char* limiters, int spaces){
     if (strlen(msg) > 0){
         int it;
-        if (strlen(limiters)==0){
+        if (strlen(limiters) == 0){
             limiters = "\n";
-        for (it = 0; it < strlen(msg); it++){
+        }
+        for (it = 0; it <= strlen(msg); it++){
             if (msg[it] != ' '){
                 printf("%c", msg[it]);
             } else if ((it%spaces < 3) && ((spaces-3) > it%spaces)) {
@@ -681,8 +702,8 @@ void imprime(char* msg, char* limiters, int spaces){
 }
 
 void msgput(char* msg, char* end){
-    if (strlen(end, "") == 0){
+    if (strcmp(end, "") == 0){
         end = "\n>>> ";
     }
-    printf("%s%s", msg, end);
+    printf("%s %s", msg, end);
 }
