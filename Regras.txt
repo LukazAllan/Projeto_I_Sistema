@@ -1,0 +1,82 @@
+Disciplina: Linguagem de Programação I
+
+Equipe: Individual ou Dupla.
+
+Sistema Alana Construções
+
+Descrição:
+
+O  UNIESP  frequentemente  está  em obras de 
+expansão. Essa atividade se tornou um 
+departamento muito complexo de gerenciar e a
+instituição resolveu contratar as soluções da
+Alana Corporation para ajudá-la a gerenciar as 
+obras e construções da instituição. Assim como 
+outros sistemas, o Alana Construções atende e
+automatiza processos que antes eram muito manuais
+a fim de fornecer agilidade ao processo.
+
+Um dos principais processos automatizados é o 
+controle de custos e compras em uma obra. Para isto,
+alguns papéis precisam ser criados dentro do
+sistema são eles: Gestor UNIESP, Engenheiro, 
+Mestre de Obra e Fornecedor.
+
+☐ À Fazer; ☑ Feito; ☒ Não Feito
+
+Gestor UNIESP
+
+    ☑ Solicitar nova Obra
+    ☑ Verificar custo da obra (quanto já gastou com
+      material e funcionários)
+    ☐ Verificar histórico da obra
+
+Engenheiro:
+
+    ☑ Iniciar Obra
+    ☐ Contratar Funcionários
+    ☐ Verificar custo da obra (quanto já gastou 
+      com material e funcionários)
+    ☐ Selecionar fornecedor e finalizar compra
+    ☐ Adicionar mensagem no histórico de 
+      acompanhamento da obra
+
+Mestre de Obra:
+
+    ☐ Solicitação de Compra
+    ☐ Confirmar recebimento da compra
+    ☐ Listar compras realizadas
+    ☐ Solicitar novos funcionários ao Engenheiro
+      (definindo a especialidade)
+
+Fornecedores:
+
+    ☐ Visualizar os chamados de compra
+    ☐ Adicionar o valor de três Fornecedores
+      (cotação)
+      # não eh necessario criar uma conta para
+      # cada um.
+
+    Não é necessário implementar bancos de dados
+para fazer essa aplicação. Pode ou não usar
+arquivos no armazenamento de informações. A
+aplicação foi planejada para funcionar muito bem
+com arrays.
+
+Datas de Acompanhamento:
+I- 28/10           II-12/11
+
+Datas de entrega:
+
+╒------------- | ----------------------------------------- | ---------------- ╕
+|Disciplinas   | Entrega                                   | Data             |
+|------------- | ----------------------------------------- | ---------------- |
+|              | Entrega 1:                                | Data Entrega 1:  |
+|              | Enviar o link github pelo                 |                  |
+|              | classroom da turma                        | 29/10            |
+|Linguagem de  | ----------------------------------------- | ---------------- |
+|Programação I | Entrega 2:                                | Data Entrega 2:  |
+|              | Projeto finalizado.                       |                  |
+|              | Enviar o link no github e apresentar o    | 26/11            |
+|              | projeto para a turma (apresentação final) |                  |
+╘------------- | ----------------------------------------- | ---------------- ╛
