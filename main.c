@@ -1,6 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(_WIN32) || defined(_WIN64)
+        const char* os = "cls";
+#else
+#ifdef __linux
+        const char* os = "clear";
+#else
+        const char* os = "clear";
+#endif
+#endif
 
 #define QTOBRAS 5 // Quantidade de Obras
 
@@ -178,23 +187,14 @@ int main() {
     // obra[2].custoInicial = getfuncsalario(1)*obra[2].func.func1 + getfuncsalario(2)*obra[2].func.func2 + getfuncsalario(3)*obra[2].func.func3 + 4000.00;
     // obra[2].custoFinal = obra[2].custoFinal;
     // obra[2].orc = obra[2].custoFinal + 4000;
-
-    while (3 > 2)
-    {
-        printf("Qual SO:\n\t0. Windows\n\t1. Linux/Mac\n>>>");
-        scanf("%i", &so);
-        // clear();
-        if ((so == 0) || (so == 1)){
-            break;
-        }
-    }
+    system(os);
     printf("%i\n", so);
     // void loop()
     while (on[0] != 0){
         // Login ----------------------------------------------------------------------------------------------------------------------
         while (logado == 0) {
             do{
-                system(sis[so]);
+                system(os);
                 titulo("Digite seu e-mail: ");
                 scanf("%s", email);
 
@@ -212,7 +212,7 @@ int main() {
             
             i=0;
             //printf("%i\n", key);
-            system(sis[so]);
+            system(os);
             do{
                 titulo(" ");
                 if (i > 0) {
@@ -226,15 +226,15 @@ int main() {
                     logado = 1;
                     
                 }
-                system(sis[so]);
-                printf("\"%s\" - \"%s\" = %d\n", login[key].senha, senha, strcmp(senha, login[key].senha));
+                system(os);
+                //printf("\"%s\" - \"%s\" = %d\n", login[key].senha, senha, strcmp(senha, login[key].senha));
             } while ((senha_aceita == 0) && (i < 5));
         }
         // Fim do Login ---------------------------------------------------------------------------------------------------------------
         printf("Logado!");
         //sleep(3);
-        system(sis[so]);
-        printf("Ola, %s!\nSeja bem-vindo, com o que posso ajudar?\n", login[key].nome);
+        system(os);
+        printf("Ola, %s!\nSeja bem-vindo(a), com o que posso ajudar?\n", login[key].nome);
         on[1] = 1;
         clear();
         if (login[key].func == 0) {
@@ -243,7 +243,7 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             int creatingObra;
             while (on[1] == 1){
-                printf("Menu\n\tA. Criar obra Nova\tB. Verificar Obras\n\tZ. Deslogar\n>>> ");
+                printf("Menu\n\tA. Criar obra Nova\tB. Verificar Obras\n\tZ. Deslogar\n%s~main> ");
                 scanf("%c", &q);
                 clear();
                 switch (q)
@@ -279,31 +279,31 @@ int main() {
                     if (creatingObra == -1){
                         printf("Limite Alcancado, nao e possivel criar mais uma obra.\n");
                     } else {
-                        system(sis[so]);
+                        system(os);
                         // clear();
-                        printf("Quantos funcionarios do tipo 1 serao empregados na obra?\nFuncionarios: ");
+                        printf("Quantos funcionarios do tipo 1 serao empregados na obra?\n%s~main/cr_obra> Funcionarios: ", login[key].nome);
                         scanf("%d", &obra[creatingObra].func.func1);
-                        system(sis[so]);
+                        system(os);
                         clear();
-                        printf("Quantos funcionarios do tipo 2 serao empregados na obra?\nFuncionarios: ");
+                        printf("Quantos funcionarios do tipo 2 serao empregados na obra?\n%s~main/cr_obra> Funcionarios: ", login[key].nome);
                         scanf("%d", &obra[creatingObra].func.func2);
-                        system(sis[so]);
+                        system(os);
                         clear();
-                        printf("Quantos funcionarios do tipo 3 serao empregados na obra?\nFuncionarios: ");
+                        printf("Quantos funcionarios do tipo 3 serao empregados na obra?\n%s~main/cr_obra> Funcionarios: ", login[key].nome);
                         scanf("%d", &obra[creatingObra].func.func3);
-                        system(sis[so]);
+                        system(os);
                         clear();
-                        printf("Quanto dinheiro sera inicialmente destinado em materiais?\nR$ ");
+                        printf("Quanto dinheiro sera inicialmente destinado em materiais?\n%s~main/cr_obra> R$ ", login[key].nome);
                         scanf("%f", &fput);
-                        system(sis[so]);
+                        system(os);
                         obra[creatingObra].custoInicial = getfuncsalario(1)*obra[creatingObra].func.func1 + getfuncsalario(2)*obra[creatingObra].func.func2 + getfuncsalario(3)*obra[creatingObra].func.func3 + fput;
                         obra[creatingObra].custoFinal = obra[creatingObra].custoInicial;
                         clear();
-                        printf("Nesta obra o custo é R$%.2f.\nQuanto dinheiro sera inicialmente destinado a mais, levando em conta,\neventuais perdas e contratacoes de novos funcionarios?\nR$ ", obra[creatingObra].custoInicial);
+                        printf("Nesta obra o custo é R$%.2f.\nQuanto dinheiro sera inicialmente destinado a mais, levando em conta,\neventuais perdas e contratacoes de novos funcionarios?\n%s~main/cr_obra> R$ ", obra[creatingObra].custoInicial, login[key].nome);
                         scanf("%f", &fput);
                         obra[creatingObra].orc = obra[creatingObra].custoInicial + fput;
                         fput = 0;
-                        system(sis[so]);
+                        system(os);
                         clear();
                         obra[creatingObra].on = 1;
                         obra[creatingObra].prog = -1.0;
@@ -325,7 +325,7 @@ int main() {
                     break;
                 }
                 if ((q != 'b') && (q != 'B')){
-                    system(sis[so]);
+                    system(os);
                 }
             }
             
@@ -334,9 +334,10 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= ENGENHEIRO -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=--
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             while (on[1] == 1){
-                printf("Menu\n\tA. Iniciar obras\tB. Contratar Funcionários\n\tC. Pedidos\tZ. Deslogar\n>>> ");
+                printf("Menu\n\tA. Iniciar obras\tB. Contratar Funcionários\n\tC. Pedidos      \tD. Verificar Custo de Obras\n\tZ. Deslogar\n%s~main> ", login[key].nome);
                 scanf("%c", &q);
                 clear();
+                system(os);
                 switch (q){
                     case 'a':
                         //code
@@ -345,15 +346,17 @@ int main() {
                         for (i = 0; i < QTOBRAS; i++) {
                             if (getArrayTemObra(i) == 1){
                                 printf("Obra %i iniciada!\n", i+1);
-                                printf("Dar início as obras? [s/n] >>>\n");
+                                printf("Dar início as obras? [s/n] %s~main/iniciar_obras> \n", login[key].nome);
                                 scanf("%c", &q);
                                 switch (q){
                                     case 's':
                                     case 'S':
                                         obra[i].prog = 0;
                                         printf("Início das obras! Obra %i iniciada\n", i+1);
+                                        break;
                                     default:
                                         printf(" ");
+                                        break;
                                 }
                             } else {
                                 printf("Obra %i não iniciada!\n", i+1);
@@ -362,15 +365,15 @@ int main() {
                         break;
                     case 'b':
                     case 'B':
-                        printf("Qual tipo de funcionário você quer contratar?\n >>>");
+                        printf("Qual tipo de funcionario você quer contratar?\n %s~main/ct_func> ", login[key].nome);
                         scanf("%d", &iput);
-                        system(sis[so]);
-                        printf("Quantos deles?\n >>>");
+                        system(os);
+                        printf("Quantos deles?\n%s~main/ct_func> ", login[key].nome);
                         scanf("%d", &iput1);
                         printf("Para qual obra? ");
                         scanf("%d", &iput2);
-                        if (obra[iput2].on > 0){
-                            printf("O impacto dessa decisão aumentará os custos:\n\tAntes:      R$%.2f\n\tAgora:     ⬆R$%.2f\n\tOrcamento:  R$%.2f\n", obra[iput2].custoFinal, obra[iput2].custoFinal + getfuncsalario(iput)*iput1, obra[iput2].orc);
+                        if (obra[iput2-1].on > 0){
+                            printf("O impacto dessa decisao aumentara os custos:\n\tAntes:      R$%.2f\n\tAgora:     ⬆R$%.2f\n\tOrcamento:  R$%.2f\n", obra[iput2].custoFinal, obra[iput2].custoFinal + getfuncsalario(iput)*iput1, obra[iput2].orc);
                         } else {
                             printf("SELECIONE UMA OBRA ATIVA!!!\n");
                         }
@@ -392,7 +395,7 @@ int main() {
                             printf("\tNao há pedidos a serem atendidos\n");
                             break;
                         } else {
-                            printf("De qual obra deseja ver os pedidos? 1 - 5\n>>> ");
+                            printf("De qual obra deseja ver os pedidos? 1 - 5\n%s~main/cx_msg> ", login[key].nome);
                             scanf("%d", &iput1);
                             iput1 = iput1 - 1;
                             if ((obra[iput1].fobra.result != 999) || (obra[iput1].mobra.result != 999)){
@@ -406,9 +409,9 @@ int main() {
                                         printf("2. Materiais\n");
                                     }
                                     printf("3. Voltar\n");
-                                    printf("O que verificar? ");
+                                    printf("%s~main/cx_msg> O que verificar?", login[key].nome);
                                     scanf("%d", &iput2);
-                                    system(sis[so]);
+                                    system(os);
                                     switch (iput2){
                                         case 1:
                                             while (menu3 == 0){
@@ -425,11 +428,11 @@ int main() {
                                                         break;
                                                 }
                                                 printf("\n\tFuncionários:\n\t  Tipo 1: %i\n\t  Tipo 2: %i\n\t  Tipo 3: %i", obra[iput1].fobra.f1, obra[iput1].fobra.f2, obra[iput1].fobra.f3);
-                                                msgput("\n1. Responder\n2. Voltar", "");
+                                                printf("\n1. Responder\n2. Voltar", "%s~main/cx_msg>", login[key].nome);
                                                 scanf("%d", &iput3);
                                                 switch (iput3){
                                                     case 1:
-                                                        printf("0. Voltar | 1. Aceitar | 2. Declinar: ");
+                                                        printf("%s~main/cx_msg> 0. Voltar | 1. Aceitar | 2. Declinar:", login[key].nome);
                                                         scanf("%d", &answ);
                                                         switch (answ){
                                                             case 1:
@@ -446,7 +449,7 @@ int main() {
                                                         menu3 = -1; // Voltando ao menu anterior alterando menu3
                                                         break;
                                                 }
-                                                system(sis[so]);
+                                                system(os);
                                             }
                                             menu3 = 0;
                                             break;
@@ -481,12 +484,13 @@ int main() {
                                                 } else {
                                                     printf("3. Responder sem cotacao\n4. Voltar");
                                                 }
+                                                printf("\n%s~main/cx_msg>", login[key].nome);
                                                 scanf("%d", &iput3);
-                                                system(sis[so]);
+                                                system(os);
                                                 switch (iput3){
                                                     case 1:
                                                         printf("%s, esta decisao pode ter impacto no custo da obra.\nCotacoes: 1. R$%.2f 2. R$%.2f 3. R$%.2f\nCusto Atual: R$%.2f\nOrcamento: %.2f\nLembre-se que o custo nao pode passar do orcamento\npara nao tornar-se uma obra deficitaria!\n", login[key].nome, obra[iput1].mobra.precos[0], obra[iput1].mobra.precos[1], obra[iput1].mobra.precos[2], obra[iput1].custoFinal, obra[iput1].orc);
-                                                        msgput("Para aceitar, digite o numero da cotacao correspondente,\nPara rejeitar, digite 4.\nPara retornar, digite 0.", "");
+                                                        printf("Para aceitar, digite o numero da cotacao correspondente,\nPara rejeitar, digite 4.\nPara retornar, digite 0.\n%s~main/cx_msg> Resposta: ", login[key].nome);
                                                         scanf("%d", &answ);
                                                         switch (answ){
                                                             case 1:
@@ -514,7 +518,7 @@ int main() {
                                                         printf("Solicitacao Enviada!\n");
                                                         break;
                                                     case 3:
-                                                        msgput("Nesta secao voce so podera negar o pedido.\nVolte, se nao quiser fazer isso.\n0. Voltar\t1. Continuar", "");
+                                                        printf("Nesta secao voce so podera negar o pedido.\nVolte, se nao quiser fazer isso.\n0. Voltar\t1. Continuar\n%s~main/cx_msg> Resposta: ", login[key].nome);
                                                         scanf("%d", &answ);
                                                         switch (answ){
                                                             case 1:
@@ -530,7 +534,7 @@ int main() {
                                                         menu3 = -1; // Voltando ao menu anterior alterando menu3
                                                         break;
                                                 }
-                                                system(sis[so]);
+                                                system(os);
                                             }
                                             menu3 = 0;
                                             break;
@@ -541,6 +545,29 @@ int main() {
                             }
                         }
                         break;
+                case 'd':
+                case 'D':
+                    for (i = 0; i < 5; i++){
+                        printf("Obra %d\n", i+1);
+                        if (obra[i].on == 0){
+                            printf("Estado: VAZIO\n");
+                        } else {
+                            if (obra[i].on == 1){
+                                printf("Estado: EM ANDAMENTO\n");
+                            } else if (obra[i].on == 2) {
+                                printf("Estado: AGURDANDO FINALIZAÇÃO\n");
+                            } else if ((obra[i].on > 2) || (obra[i].on < 0)){
+                                printf("Estado: ERRO ==> %d\n", obra[i].on);
+                            }
+                            printf("\tOrcamento:     R$%.2f\n\tCusto Inicial: R$%.2f\n\tCusto Final:   R$%.2f\n\tFuncionarios:  %d pessoas\n", obra[i].orc, obra[i].custoInicial, obra[i].custoFinal, obra[i].func.func1 + obra[i].func.func2 + obra[i].func.func3);
+                            if (getBalanco(i) > 0){
+                                printf("\tBalanço:       R$+%.2f\n", getBalanco(i));
+                            } else {
+                                printf("\tBalanço:       R$%.2f\n", getBalanco(i));
+                            }
+                        }
+                    }
+                    break;
                     case 'z':
                     case 'Z':
                         on[1] = 0;
@@ -555,7 +582,7 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             
             while (on[1] == 1){
-                printf("Menu\n\tA. Avançar obras\n\tZ. Deslogar\n>>> ");
+                printf("Nao ha nada o que fazer aqui... AINDA!\n\tZ. Deslogar\n%s~main> ", login[key].nome);
                 scanf("%c", &q);
                 clear();
                 switch (q){
@@ -566,6 +593,7 @@ int main() {
                         //sleep(3);
                         break;
                 }
+                system(os);
             }
         } else if (login[key].func == 3) {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -573,7 +601,7 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             
             while (on[1] == 1){
-                printf("Nao ha nada o que fazer aqui... AINDA!\n\tZ. Deslogar\n>>> ");
+                printf("Nao ha nada o que fazer aqui... AINDA!\n\tZ. Deslogar\n%s~main> ", login[key].nome);
                 scanf("%c", &q);
                 clear();
                 switch (q){
@@ -584,6 +612,7 @@ int main() {
                         //sleep(3);
                         break;
                 }
+                system(os);
             }
         } else {
             printf("ERROR FATAL!!! USER TYPE NOT RECOGNIZED!!!\n");
