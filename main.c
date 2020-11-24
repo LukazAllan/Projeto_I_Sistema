@@ -232,7 +232,7 @@ int main() {
         }
         // Fim do Login ---------------------------------------------------------------------------------------------------------------
         printf("Logado!");
-        //sleep(3);
+        
         system(os);
         printf("Ola, %s!\nSeja bem-vindo(a), com o que posso ajudar?\n", login[key].nome);
         on[1] = 1;
@@ -310,7 +310,7 @@ int main() {
                         printf("OBRA CRIADA!!!\n");
                         // sleep(2);
                     }
-                    //sleep(3);
+                    
                     break;
 
                 case 'z':
@@ -318,7 +318,7 @@ int main() {
                 case 'Z':
                     on[1] = 0;
                     printf("Deslogando....\n");
-                    //sleep(3);
+                    
                     break;
                 
                 default:
@@ -345,8 +345,8 @@ int main() {
                         printf("Verificando se o gestor comecou alguma obra...\n");
                         for (i = 0; i < QTOBRAS; i++) {
                             if (getArrayTemObra(i) == 1){
-                                printf("Obra %i iniciada!\n", i+1);
-                                printf("Dar início as obras? [s/n] %s~main/iniciar_obras> \n", login[key].nome);
+                                printf("Obra %i ativa esperando início!\n", i+1);
+                                printf("%s~main/iniciar_obras> Dar início as obras? [s/n] ", login[key].nome);
                                 scanf("%c", &q);
                                 switch (q){
                                     case 's':
@@ -359,7 +359,7 @@ int main() {
                                         break;
                                 }
                             } else {
-                                printf("Obra %i não iniciada!\n", i+1);
+                                printf("Obra %i inativa!\n", i+1);
                             }
                         }
                         break;
@@ -372,7 +372,8 @@ int main() {
                         scanf("%d", &iput1);
                         printf("Para qual obra? ");
                         scanf("%d", &iput2);
-                        if (obra[iput2-1].on > 0){
+                        iput2 = iput2-1;
+                        if (obra[iput2].on > 0){
                             printf("O impacto dessa decisao aumentara os custos:\n\tAntes:      R$%.2f\n\tAgora:     ⬆R$%.2f\n\tOrcamento:  R$%.2f\n", obra[iput2].custoFinal, obra[iput2].custoFinal + getfuncsalario(iput)*iput1, obra[iput2].orc);
                         } else {
                             printf("SELECIONE UMA OBRA ATIVA!!!\n");
@@ -397,6 +398,7 @@ int main() {
                         } else {
                             printf("De qual obra deseja ver os pedidos? 1 - 5\n%s~main/cx_msg> ", login[key].nome);
                             scanf("%d", &iput1);
+                            printf("--------------------------------------------------------\n");
                             iput1 = iput1 - 1;
                             if ((obra[iput1].fobra.result != 999) || (obra[iput1].mobra.result != 999)){
                                 iput2 = 0;
@@ -409,9 +411,10 @@ int main() {
                                         printf("2. Materiais\n");
                                     }
                                     printf("3. Voltar\n");
-                                    printf("%s~main/cx_msg> O que verificar?", login[key].nome);
+                                    printf("%s~main/cx_msg> O que verificar? ", login[key].nome);
                                     scanf("%d", &iput2);
                                     system(os);
+                                    menu3 = 0;
                                     switch (iput2){
                                         case 1:
                                             while (menu3 == 0){
@@ -451,7 +454,6 @@ int main() {
                                                 }
                                                 system(os);
                                             }
-                                            menu3 = 0;
                                             break;
                                         case 2:
                                             while (menu3 == 0){
@@ -545,36 +547,37 @@ int main() {
                             }
                         }
                         break;
-                case 'd':
-                case 'D':
-                    for (i = 0; i < 5; i++){
-                        printf("Obra %d\n", i+1);
-                        if (obra[i].on == 0){
-                            printf("Estado: VAZIO\n");
-                        } else {
-                            if (obra[i].on == 1){
-                                printf("Estado: EM ANDAMENTO\n");
-                            } else if (obra[i].on == 2) {
-                                printf("Estado: AGURDANDO FINALIZAÇÃO\n");
-                            } else if ((obra[i].on > 2) || (obra[i].on < 0)){
-                                printf("Estado: ERRO ==> %d\n", obra[i].on);
-                            }
-                            printf("\tOrcamento:     R$%.2f\n\tCusto Inicial: R$%.2f\n\tCusto Final:   R$%.2f\n\tFuncionarios:  %d pessoas\n", obra[i].orc, obra[i].custoInicial, obra[i].custoFinal, obra[i].func.func1 + obra[i].func.func2 + obra[i].func.func3);
-                            if (getBalanco(i) > 0){
-                                printf("\tBalanço:       R$+%.2f\n", getBalanco(i));
+                    case 'd':
+                    case 'D':
+                        for (i = 0; i < 5; i++){
+                            printf("Obra %d\n", i+1);
+                            if (obra[i].on == 0){
+                                printf("Estado: VAZIO\n");
                             } else {
-                                printf("\tBalanço:       R$%.2f\n", getBalanco(i));
+                                if (obra[i].on == 1){
+                                    printf("Estado: EM ANDAMENTO\n");
+                                } else if (obra[i].on == 2) {
+                                    printf("Estado: AGURDANDO FINALIZAÇÃO\n");
+                                } else if ((obra[i].on > 2) || (obra[i].on < 0)){
+                                    printf("Estado: ERRO ==> %d\n", obra[i].on);
+                                }
+                                printf("\tOrcamento:     R$%.2f\n\tCusto Inicial: R$%.2f\n\tCusto Final:   R$%.2f\n\tFuncionarios:  %d pessoas\n", obra[i].orc, obra[i].custoInicial, obra[i].custoFinal, obra[i].func.func1 + obra[i].func.func2 + obra[i].func.func3);
+                                if (getBalanco(i) > 0){
+                                    printf("\tBalanço:       R$+%.2f\n", getBalanco(i));
+                                } else {
+                                    printf("\tBalanço:       R$%.2f\n", getBalanco(i));
+                                }
                             }
                         }
-                    }
-                    break;
+                        break;
                     case 'z':
                     case 'Z':
                         on[1] = 0;
                         printf("Deslogando....\n");
-                        //sleep(3);
+                        
                         break;
                 }
+                clear();
             }
         } else if (login[key].func == 2) {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -590,7 +593,7 @@ int main() {
                     case 'Z':
                         on[1] = 0;
                         printf("Deslogando....\n");
-                        //sleep(3);
+                        
                         break;
                 }
                 system(os);
@@ -609,7 +612,7 @@ int main() {
                     case 'Z':
                         on[1] = 0;
                         printf("Deslogando....\n");
-                        //sleep(3);
+                        
                         break;
                 }
                 system(os);
