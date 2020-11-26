@@ -259,9 +259,10 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             int creatingObra;
             while (on[1] == 1){
-                printf("Menu\n\tA. Criar obra Nova\tB. Verificar Obras\n\tZ. Deslogar\n%s~main> ", login[key].nome);
+                printf("Menu\n\tA. Criar obra Nova\tB. Verificar Obras\n\tC. Finalizar Obra\tZ. Deslogar\n%s~main> ", login[key].nome);
                 scanf("%c", &q);
                 clear();
+                menu2 = 0;
                 switch (q){
                     case 'a':
                     case 'A':
@@ -327,11 +328,46 @@ int main() {
                             }
                         }
                         break;
+                    case 'c':
+                    case 'C':
+                        while (menu2 == 0){
+                            printf("%s~main/pedidos> Digite o numero da obra que voce quer finalizar?\n[1 - 5] 6 - saida: ", login[key].nome);
+                            scanf("%d", &iput1);
+                            if (iput1 != 6){
+                                iput1 = iput1 -1;
+                                if (obra[iput1].on == 2){
+                                    printf("Obra %d Concluída!\n");
+                                    obra[iput1].on = 0;
+                                    obra[iput1].prog = -1;
+                                    obra[iput1].custoInicial = 0;
+                                    obra[iput1].custoFinal = 0;
+                                    obra[iput1].orc = 0;
+                                    obra[iput1].func.func1 = 0;
+                                    obra[iput1].func.func2 = 0;
+                                    obra[iput1].func.func3 = 0;
+                                    obra[iput1].fobra.result = 999;
+                                    obra[iput1].fobra.f1 = 0;
+                                    obra[iput1].fobra.f2 = 0;
+                                    obra[iput1].fobra.f3 = 0;
+                                    obra[iput1].mobra.result = 999;
+                                    obra[iput1].mobra.response = -1;
+                                    strcpy(obra[iput1].mobra.mat, "..................");
+                                    obra[iput1].mobra.precos[0] = 0;
+                                    obra[iput1].mobra.precos[1] = 0;
+                                    obra[iput1].mobra.precos[2] = 0;
+                                } else{
+                                    printf("Escolha uma obra finalizada!\n");
+                                }
+                            } else {
+                                menu2 = -1;
+                            }
+                        }
+                        break;
                     case 'z':
                         /* code */
                     case 'Z':
                         on[1] = 0;
-                        printf("Deslogando....\n");
+                        printf("Deslogando....\nPressione ENTER para continuar");
                         
                         break;
                     
@@ -359,24 +395,29 @@ int main() {
                         printf("Verificando se o gestor comecou alguma obra...\n");
                         for (i = 0; i < QTOBRAS; i++) {
                             if (getArrayTemObra(i) == 1){
-                                printf("Obra %i ativa esperando inicio!\n", i+1);
-                                printf("%s~main/iniciar_obras> Dar inicio as obras? [s/n] ", login[key].nome);
-                                scanf("%c", &q);
-                                clear();
-                                switch (q){
-                                    case 's':
-                                    case 'S':
-                                        obra[i].prog = 0;
-                                        printf("Inicio das obras! Obra %i iniciada\n", i+1);
-                                        break;
-                                    default:
-                                        printf(" ");
-                                        break;
+                                if (obra[i].prog < 0){
+                                    printf("Obra %i ativa esperando inicio!\n", i+1);
+                                    printf("%s~main/iniciar_obras> Dar inicio as obras? [s/n] ", login[key].nome);
+                                    scanf("%c", &q);
+                                    clear();
+                                    switch (q){
+                                        case 's':
+                                        case 'S':
+                                            obra[i].prog = 0;
+                                            printf("Inicio das obras! Obra %i iniciada\n", i+1);
+                                            break;
+                                        default:
+                                            printf(" ");
+                                            break;
+                                    }
+                                } else{
+                                    printf("Obra %i ativa iniciada!\n", i+1);
                                 }
                             } else {
                                 printf("Obra %i inativa!\n", i+1);
                             }
                         }
+                        printf("Pressione ENTER para continuar");
                         break;
                     case 'b':
                     case 'B':
@@ -399,6 +440,7 @@ int main() {
                         break;
                     case 'c':
                     case 'C':
+                        menu2 = 0;
                         while (menu2 == 0){
                             iput = 0;
                             printf("CAIXA DE MENSAGENS\n");
@@ -415,172 +457,176 @@ int main() {
                                 printf("De qual obra deseja ver os pedidos? 1 - 5, 6 volta\n%s~main/cx_msg> ", login[key].nome);
                                 scanf("%d", &iput1);
                                 printf("--------------------------------------------------------\n");
-                                iput1 = iput1 - 1;
-                                if (((0 <= iput1) || (iput1 < QTOBRAS)) && ((obra[i].fobra.result == 0 ) || (obra[i].mobra.result == 0) || (obra[i].mobra.response == 0))){
-                                    iput2 = 0;
-                                    while (iput2 != 3){
-                                        printf("Pedidos:\n");
-                                        if (obra[iput1].fobra.result != 999){
-                                            printf("1. Funcionarios\n");
+                                if (iput1 != 6){
+                                    iput1 = iput1 - 1;
+                                    if (((0 <= iput1) || (iput1 < QTOBRAS)) && ((obra[i].fobra.result == 0 ) || (obra[i].mobra.result == 0) || (obra[i].mobra.response == 0))){
+                                        iput2 = 0;
+                                        while (iput2 != 3){
+                                            printf("Pedidos:\n");
+                                            if (obra[iput1].fobra.result != 999){
+                                                printf("1. Funcionarios\n");
+                                            }
+                                            if (obra[iput1].mobra.result != 999){
+                                                printf("2. Materiais\n");
+                                            }
+                                            printf("3. Voltar\n");
+                                            printf("%s~main/cx_msg> O que verificar? ", login[key].nome);
+                                            scanf("%d", &iput2);
+                                            system(os);
+                                            menu3 = 0;
+                                            switch (iput2){
+                                                case 1:
+                                                    while (menu3 == 0){
+                                                        printf("Pedido:\n\tEstado: ");
+                                                        switch (obra[iput1].fobra.result){
+                                                            case 0:
+                                                                printf("AGUARDANDO RESPOSTA");
+                                                                break;
+                                                            case 1:
+                                                                printf("APROVADO");
+                                                                break;
+                                                            case -1:
+                                                                printf("REPROVADO");
+                                                                break;
+                                                        }
+                                                        printf("\n\tFuncionarios:\n\t  Tipo 1: %i\n\t  Tipo 2: %i\n\t  Tipo 3: %i", obra[iput1].fobra.f1, obra[iput1].fobra.f2, obra[iput1].fobra.f3);
+                                                        printf("\n1. Responder\n2. Voltar\n%s~main/cx_msg>", login[key].nome);
+                                                        scanf("%d", &iput3);
+                                                        // system(so);
+                                                        switch (iput3){
+                                                            case 1:
+                                                                printf("O impacto nos custos dessa obra serao mais R$%.2f\nCusto Final: R$%.2f\nOrcamento: R$%.2f\n", ((obra[iput1].fobra.f1 * getfuncsalario(1)) + (obra[iput1].fobra.f2 * getfuncsalario(2)) + (obra[iput1].fobra.f3 * getfuncsalario(3))), obra[iput1].custoFinal, obra[iput1].orc );
+                                                                printf("%s~main/cx_msg> 0. Voltar | 1. Aceitar | 2. Declinar:", login[key].nome);
+                                                                scanf("%d", &answ);
+                                                                switch (answ){
+                                                                    case 1:
+                                                                        obra[iput1].fobra.result = 1;
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    case 2:
+                                                                        obra[iput1].fobra.result = -1;
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    default:
+                                                                        break;
+                                                                }
+                                                                break;
+                                                            default:
+                                                                menu3 = -1; // Voltando ao menu anterior alterando menu3
+                                                                break;
+                                                        }
+                                                        system(os);
+                                                    }
+                                                    break;
+                                                case 2:
+                                                    while (menu3 == 0){
+                                                        printf("Pedido:\n\tEstado: ");
+                                                        switch (obra[iput1].mobra.result){
+                                                            case 0:
+                                                                printf("AGUARDANDO RESPOSTA");
+                                                                break;
+                                                            case 1:
+                                                                printf("APROVADO");
+                                                                break;
+                                                            case -1:
+                                                                printf("REPROVADO");
+                                                                break;
+                                                        }
+                                                        switch (obra[iput1].mobra.response){
+                                                            case 0:
+                                                                printf("\n\tCotacoes: Esperando resposta do fornecedor!\n");
+                                                                break;
+                                                            case 1:
+                                                                printf("\n\tCotacoes:\n\t\tR$%.2f\n\t\tR$%.2f\n\t\tR$%.2f\n", obra[iput1].mobra.precos[0], obra[iput1].mobra.precos[1], obra[iput1].mobra.precos[2]);
+                                                                break;
+                                                            default:
+                                                                printf("\n\tCotacoes: Peca uma cotacao ao fornecedor!\n");
+                                                                break;
+                                                        }
+                                                        printf("\n1. Responder\t");
+                                                        if (obra[iput1].mobra.response != 1){
+                                                            printf("2. Pedir Cotacao\n3. Responder sem cotacao\t4. Voltar");
+                                                        } else {
+                                                            printf("4. Voltar");
+                                                        }
+                                                        printf("\n%s~main/cx_msg>", login[key].nome);
+                                                        scanf("%d", &iput3);
+                                                        system(os);
+                                                        switch (iput3){
+                                                            case 1:
+                                                                printf("%s, esta decisao pode ter impacto no custo da obra.\nCotacoes: 1. R$%.2f 2. R$%.2f 3. R$%.2f\nCusto Atual: R$%.2f\nOrcamento: %.2f\nLembre-se que o custo nao pode passar do orcamento\npara nao tornar-se uma obra deficitaria!\n", login[key].nome, obra[iput1].mobra.precos[0], obra[iput1].mobra.precos[1], obra[iput1].mobra.precos[2], obra[iput1].custoFinal, obra[iput1].orc);
+                                                                printf("Para aceitar, digite o numero da cotacao correspondente,\nPara rejeitar, digite 4.\nPara retornar, digite 0.\n%s~main/cx_msg> Resposta: ", login[key].nome);
+                                                                scanf("%d", &answ);
+                                                                switch (answ){
+                                                                    case 1:
+                                                                        obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[0];
+                                                                        obra[iput1].mobra.result = 1;
+                                                                        obra[iput1].mobra.escolha = answ-1;
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    case 2:
+                                                                        obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[1];
+                                                                        obra[iput1].mobra.result = 1;
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    case 3:
+                                                                        obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[2];
+                                                                        obra[iput1].mobra.result = 1;
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    case 4:
+                                                                        obra[iput1].mobra.result = -1;
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    default:
+                                                                        //code
+                                                                        break;
+                                                                }
+                                                                break;
+                                                            case 2:
+                                                                obra[iput1].mobra.response = 0;
+                                                                printf("Solicitacao Enviada!\n");
+                                                                break;
+                                                            case 3:
+                                                                printf("Nesta secao voce so podera negar o pedido.\nVolte, se nao quiser fazer isso.\n0. Voltar\t1. Continuar\n%s~main/cx_msg> Resposta: ", login[key].nome);
+                                                                scanf("%d", &answ);
+                                                                switch (answ){
+                                                                    case 0:
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    case 1:
+                                                                        obra[iput1].mobra.response = -1;
+                                                                        printf("PEDIDO NEGADO!\n");
+                                                                        menu3 = -1;
+                                                                        iput2 = 3;
+                                                                        break;
+                                                                    default:
+                                                                        //code
+                                                                        break;
+                                                                }
+                                                                break;
+                                                            case 4:
+                                                                menu3 = -1; // Voltando ao menu anterior alterando menu3
+                                                                break;
+                                                        }
+                                                        system(os);
+                                                    }
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }
-                                        if (obra[iput1].mobra.result != 999){
-                                            printf("2. Materiais\n");
-                                        }
-                                        printf("3. Voltar\n");
-                                        printf("%s~main/cx_msg> O que verificar? ", login[key].nome);
-                                        scanf("%d", &iput2);
-                                        system(os);
-                                        menu3 = 0;
-                                        switch (iput2){
-                                            case 1:
-                                                while (menu3 == 0){
-                                                    printf("Pedido:\n\tEstado: ");
-                                                    switch (obra[iput1].fobra.result){
-                                                        case 0:
-                                                            printf("AGUARDANDO RESPOSTA");
-                                                            break;
-                                                        case 1:
-                                                            printf("APROVADO");
-                                                            break;
-                                                        case -1:
-                                                            printf("REPROVADO");
-                                                            break;
-                                                    }
-                                                    printf("\n\tFuncionarios:\n\t  Tipo 1: %i\n\t  Tipo 2: %i\n\t  Tipo 3: %i", obra[iput1].fobra.f1, obra[iput1].fobra.f2, obra[iput1].fobra.f3);
-                                                    printf("\n1. Responder\n2. Voltar\n%s~main/cx_msg>", login[key].nome);
-                                                    scanf("%d", &iput3);
-                                                    // system(so);
-                                                    switch (iput3){
-                                                        case 1:
-                                                            printf("O impacto nos custos dessa obra serao mais R$%.2f\nCusto Final: R$%.2f\nOrcamento: R$%.2f\n", ((obra[iput1].fobra.f1 * getfuncsalario(1)) + (obra[iput1].fobra.f2 * getfuncsalario(2)) + (obra[iput1].fobra.f3 * getfuncsalario(3))), obra[iput1].custoFinal, obra[iput1].orc );
-                                                            printf("%s~main/cx_msg> 0. Voltar | 1. Aceitar | 2. Declinar:", login[key].nome);
-                                                            scanf("%d", &answ);
-                                                            switch (answ){
-                                                                case 1:
-                                                                    obra[iput1].fobra.result = 1;
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                case 2:
-                                                                    obra[iput1].fobra.result = -1;
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                default:
-                                                                    break;
-                                                            }
-                                                            break;
-                                                        default:
-                                                            menu3 = -1; // Voltando ao menu anterior alterando menu3
-                                                            break;
-                                                    }
-                                                    system(os);
-                                                }
-                                                break;
-                                            case 2:
-                                                while (menu3 == 0){
-                                                    printf("Pedido:\n\tEstado: ");
-                                                    switch (obra[iput1].mobra.result){
-                                                        case 0:
-                                                            printf("AGUARDANDO RESPOSTA");
-                                                            break;
-                                                        case 1:
-                                                            printf("APROVADO");
-                                                            break;
-                                                        case -1:
-                                                            printf("REPROVADO");
-                                                            break;
-                                                    }
-                                                    switch (obra[iput1].mobra.response){
-                                                        case 0:
-                                                            printf("\n\tCotacoes: Esperando resposta do fornecedor!\n");
-                                                            break;
-                                                        case 1:
-                                                            printf("\n\tCotacoes:\n\t\tR$%.2f\n\t\tR$%.2f\n\t\tR$%.2f\n", obra[iput1].mobra.precos[0], obra[iput1].mobra.precos[1], obra[iput1].mobra.precos[2]);
-                                                            break;
-                                                        default:
-                                                            printf("\n\tCotacoes: Peça uma cotacao ao fornecedor!\n");
-                                                            break;
-                                                    }
-                                                    printf("\n1. Responder\t");
-                                                    if (obra[iput1].mobra.response != 1){
-                                                        printf("2. Pedir Cotacao\n3. Responder sem cotacao\t4. Voltar");
-                                                    } else {
-                                                        printf("4. Voltar");
-                                                    }
-                                                    printf("\n%s~main/cx_msg>", login[key].nome);
-                                                    scanf("%d", &iput3);
-                                                    system(os);
-                                                    switch (iput3){
-                                                        case 1:
-                                                            printf("%s, esta decisao pode ter impacto no custo da obra.\nCotacoes: 1. R$%.2f 2. R$%.2f 3. R$%.2f\nCusto Atual: R$%.2f\nOrcamento: %.2f\nLembre-se que o custo nao pode passar do orcamento\npara nao tornar-se uma obra deficitaria!\n", login[key].nome, obra[iput1].mobra.precos[0], obra[iput1].mobra.precos[1], obra[iput1].mobra.precos[2], obra[iput1].custoFinal, obra[iput1].orc);
-                                                            printf("Para aceitar, digite o numero da cotacao correspondente,\nPara rejeitar, digite 4.\nPara retornar, digite 0.\n%s~main/cx_msg> Resposta: ", login[key].nome);
-                                                            scanf("%d", &answ);
-                                                            switch (answ){
-                                                                case 1:
-                                                                    obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[0];
-                                                                    obra[iput1].mobra.result = 1;
-                                                                    obra[iput1].mobra.escolha = answ-1;
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                case 2:
-                                                                    obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[1];
-                                                                    obra[iput1].mobra.result = 1;
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                case 3:
-                                                                    obra[iput1].custoFinal = obra[iput1].custoFinal + obra[iput1].mobra.precos[2];
-                                                                    obra[iput1].mobra.result = 1;
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                case 4:
-                                                                    obra[iput1].mobra.result = -1;
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                default:
-                                                                    //code
-                                                                    break;
-                                                            }
-                                                            break;
-                                                        case 2:
-                                                            obra[iput1].mobra.response = 0;
-                                                            printf("Solicitacao Enviada!\n");
-                                                            break;
-                                                        case 3:
-                                                            printf("Nesta secao voce so podera negar o pedido.\nVolte, se nao quiser fazer isso.\n0. Voltar\t1. Continuar\n%s~main/cx_msg> Resposta: ", login[key].nome);
-                                                            scanf("%d", &answ);
-                                                            switch (answ){
-                                                                case 0:
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                case 1:
-                                                                    obra[iput1].mobra.response = -1;
-                                                                    printf("PEDIDO NEGADO!\n");
-                                                                    menu3 = -1;
-                                                                    iput2 = 3;
-                                                                    break;
-                                                                default:
-                                                                    //code
-                                                                    break;
-                                                            }
-                                                            break;
-                                                        case 4:
-                                                            menu3 = -1; // Voltando ao menu anterior alterando menu3
-                                                            break;
-                                                    }
-                                                    system(os);
-                                                }
-                                                break;
-                                            default:
-                                                break;
-                                        }
+                                    } else if (iput == 5){
+                                        menu2 = -1;
                                     }
-                                } else if (iput == 5){
+                                } else {
                                     menu2 = -1;
                                 }
                             }
@@ -608,11 +654,12 @@ int main() {
                                 }
                             }
                         }
+                        printf("Pressione Enter para continuar");
                         break;
                     case 'z':
                     case 'Z':
                         on[1] = 0;
-                        printf("Deslogando....\n");
+                        printf("Deslogando....\nPressione ENTER para continuar");
                         
                         break;
                 }
@@ -624,9 +671,11 @@ int main() {
             // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             
             while (on[1] == 1){
-                printf("Menu\n\tA. Fazer Pedido de Materiais\tB. Fazer Pedido de Funcionarios\n\tC. Andamento dos Pedidos\tZ. Deslogar\n%s~main> ", login[key].nome);
+                printf("Menu\n\tA. Fazer Pedido de Materiais\tB. Fazer Pedido de Funcionarios\n\tC. Andamento dos Pedidosn\tD. Progresso\n\tZ. Deslogar\n%s~main> ", login[key].nome);
                 scanf("%c", &q);
                 clear();
+                menu3 = 0;
+                menu2 = 0;
                 switch (q){
                     case 'a':
                     case 'A':
@@ -640,6 +689,11 @@ int main() {
                                     iput = iput + 1;
                                 } else {
                                     printf(" nao e possivel fazer um pedido");
+                                    if (obra[i].mobra.result == 0){
+                                        printf(", aguarde finalizacao");
+                                    } else if ((obra[i].mobra.result == 1) || (obra[i].mobra.result == -1)){
+                                        printf(", va na secao \"Andamento dos Pedidos\" ha atualizacao no pedido!");
+                                    }
                                 }
                                 printf("\n");
                                 // printf(" on = %i; mobra.result = %i; mobra.response = %i\n", obra[i].on, obra[i].mobra.result, obra[i].mobra.response);
@@ -665,35 +719,10 @@ int main() {
                     case 'b':
                     case 'B':
                         while (menu3 >= 0){
-                            printf("Pedido de Materiais ----------------------------------------------------\n");
-                            iput = 0;
-                            for (i = 0; i < QTOBRAS; i++){
-                                printf("Na Obra %d,", i+1);
-                                if ((getObraOn(i) == 1) && (obra[i].mobra.result == 999)){
-                                    printf(" e possivel fazer um pedido", i, i+1);
-                                    iput = iput + 1;
-                                } else {
-                                    printf(" nao e possivel fazer um pedido");
-                                }
-                                printf("\n");
-                                // printf(" on = %i; mobra.result = %i; mobra.response = %i\n", obra[i].on, obra[i].mobra.result, obra[i].mobra.response);
-                            }
-                            printf("Digite o numero da obra para fazer pedidos ou 0 para voltar.\n%s~main/pedidos> ", login[key].nome);
+                            printf("Pedido de Funcionarios ----------------------------------------------------\n");
+                            printf("Funcao nao implementada :(\n");
+                            printf("Digite 0 para voltar.\n%s~main/pedidos> ", login[key].nome);
                             scanf("%d", &iput1);
-                            iput1 = iput1 -1;
-                            if (iput1 <= 0){
-                                menu3 = -1;
-                                continue;
-                            } else if (iput1 < QTOBRAS) {
-                                printf("Para prosseguir voce dara o nome do material para o Engenheiro\nescolher se aceita ou o rejeita.\n");
-                                printf("%s~main/pedidos/obra_%d>Material: ", login[key].nome, iput1+1);
-                                scanf("%s", obra[key].mobra.mat);
-                                obra[iput1].mobra.result = 0;
-                            } else {
-                                printf("ERROR INDEX NOT FOUND IN obra\n");
-                                menu3 = -1;
-                                continue;
-                            }
                         }
                         break;
                     case 'c':
@@ -703,7 +732,7 @@ int main() {
                             printf("Pedido de Materiais ----------------------------------------------------\n");
                             for (i = 0; i < QTOBRAS; i++){
                                 printf("Na Obra %d, ", i+1);
-                                if ((getObraOn(i) == 1) && (obra[i].mobra.result != 0) && (obra[i].fobra.result != 0) && (obra[i].mobra.result != 999) && (obra[i].fobra.result != 999)){
+                                if ((getObraOn(i) == 1) && ((obra[i].mobra.result != 0) || (obra[i].fobra.result != 0) || (obra[i].mobra.result != 999) || (obra[i].fobra.result != 999))){
                                     printf("tem ");
                                 } else{
                                     printf("nao tem ");
@@ -775,6 +804,10 @@ int main() {
                                                 break;
                                             }
                                             break;
+                                        case 0:
+                                            menu3 = -1;
+                                            menu2 = -1;
+                                            break;
                                         default:
                                             //code
                                             break;
@@ -786,10 +819,31 @@ int main() {
                             }
                         }
                         break;
+                    case 'd':
+                    case 'D':
+                        while (menu2 == 0){
+                            printf("%s~main/pedidos> Digite o numero da obra que voce quer progredir?\n[1 - 5] 6 - saida: ", login[key].nome);
+                            scanf("%d", &iput1);
+                            if (iput1 != 6){
+                                iput1 = iput1 -1;
+                                if ((getObraOn == 1) && (obra[iput1].prog >= 0)){
+                                    obra[iput1].prog = obra[iput1].prog + 10;
+                                    if (obra[iput1].prog == 100){
+                                        obra[iput1].on = 2;
+                                        printf("Obra %d Concluída!\n");
+                                    }
+                                } else{
+                                    printf("Escolha uma obra ativa!\n");
+                                }
+                            } else {
+                                menu2 = -1;
+                            }
+                        }
+                        break;
                     case 'z':
                     case 'Z':
                         on[1] = 0;
-                        printf("Deslogando....\n");
+                        printf("Deslogando....\nPressione Enter para Continuar");
                         
                         break;
                 }
@@ -856,7 +910,7 @@ int main() {
                     case 'z':
                     case 'Z':
                         on[1] = 0;
-                        printf("Deslogando....\n");
+                        printf("Deslogando....\nPressione ENTER para continuar");
                         
                         break;
                 }
